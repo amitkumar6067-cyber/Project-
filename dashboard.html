@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Dashboard — EDUNOVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <style>
+    .dash-quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+    .quick-action {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 14px 8px; background: var(--bg-card); border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg); font-size: 0.6875rem; font-weight: 600;
+      color: var(--text-secondary); transition: all var(--transition-fast); text-align: center;
+    }
+    .quick-action:hover { border-color: var(--primary-300); color: var(--primary-600); transform: translateY(-2px); }
+    .quick-action span { font-size: 1.375rem; }
+    .announce-card {
+      background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .announce-tag {
+      font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 2px 8px; border-radius: var(--radius-full); background: var(--primary-100); color: var(--primary-700);
+    }
+    [data-theme="dark"] .announce-tag { background: rgba(99,102,241,0.2); color: var(--primary-300); }
+    .assign-card {
+      background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .assign-card.pending { border-left: 3px solid var(--warning); }
+    .tt-item {
+      display: grid; grid-template-columns: 72px 1fr auto; gap: 12px; align-items: center;
+      padding: 12px 14px; background: var(--bg-card); border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg); margin-bottom: 8px;
+    }
+    .tt-time { font-size: 0.8125rem; font-weight: 700; }
+    .tt-end { font-size: 0.6875rem; color: var(--text-muted); }
+    .status-pill {
+      font-size: 0.6875rem; font-weight: 600; padding: 3px 10px; border-radius: var(--radius-full);
+    }
+    .status-pill.completed { background: var(--success-light); color: #047857; }
+    .status-pill.upcoming { background: var(--primary-100); color: var(--primary-700); }
+    [data-theme="dark"] .status-pill.completed { background: rgba(16,185,129,0.2); color: #34d399; }
+    [data-theme="dark"] .status-pill.upcoming { background: rgba(99,102,241,0.2); color: var(--primary-300); }
+    .attend-bar { display: flex; gap: 4px; margin-top: 10px; }
+    .attend-day {
+      flex: 1; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+      font-size: 0.625rem; font-weight: 600;
+    }
+    .attend-day.present { background: var(--success-light); color: #047857; }
+    .attend-day.absent { background: var(--error-light); color: #b91c1c; }
+    [data-theme="dark"] .attend-day.present { background: rgba(16,185,129,0.2); color: #34d399; }
+    [data-theme="dark"] .attend-day.absent { background: rgba(239,68,68,0.2); color: #f87171; }
+    .mini-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-top: 12px; }
+    .mini-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+    .mini-bar { width: 100%; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--primary-500), var(--violet-500)); min-height: 4px; }
+    .mini-bar-label { font-size: 0.625rem; color: var(--text-muted); }
+    .subject-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .subject-bar-bg { flex: 1; height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden; }
+    .subject-bar-fill { height: 100%; border-radius: 4px; }
+    .section-link { font-size: 0.8125rem; font-weight: 600; color: var(--primary-600); }
+    [data-theme="dark"] .section-link { color: var(--primary-400); }
+  </style>
+</head>
+<body class="dashboard-page has-bottom-nav">
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="../index.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <div class="nav-actions">
+        <button class="nav-search-btn" id="searchBtn" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+        <button class="nav-notif-btn" id="notifBtn" aria-label="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge" id="notifBadge">3</span>
+        </button>
+        <div class="profile-dropdown">
+          <button class="profile-btn" id="profileBtn"><div class="profile-avatar">AM</div></button>
+          <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu-header"><h4>Aarav Mehta</h4><p>JEE Advanced 2027</p></div>
+            <a href="dashboard.html" class="profile-menu-item">Dashboard</a>
+            <a href="analytics.html" class="profile-menu-item">Analytics</a>
+            <a href="assignments.html" class="profile-menu-item">Assignments</a>
+            <a href="profile.html" class="profile-menu-item">Profile</a>
+            <button class="profile-menu-item danger" data-action="logout">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-panel-header"><h3>Notifications</h3><button class="btn btn-ghost btn-sm" id="markAllRead">Mark all read</button></div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <div class="search-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search..." aria-label="Search">
+        <button id="searchClose"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <main class="page-content">
+    <div class="dashboard-header">
+      <div class="container">
+        <div class="dashboard-greeting">
+          <h1 id="greeting">Good evening, Aarav</h1>
+          <p>Ready to continue learning?</p>
+        </div>
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-card-icon progress">📈</div>
+            <div class="stat-card-value">68%</div>
+            <div class="stat-card-label">Progress</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon lessons">✅</div>
+            <div class="stat-card-value">101</div>
+            <div class="stat-card-label">Lessons</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon quiz">🎯</div>
+            <div class="stat-card-value">87%</div>
+            <div class="stat-card-label">Quiz Avg</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon streak">🔥</div>
+            <div class="stat-card-value">12</div>
+            <div class="stat-card-label">Streak</div>
+          </div>
+        </div>
+        <div class="dash-quick">
+          <a href="player.html?course=jee-adv-2027" class="quick-action"><span>▶</span>Learn</a>
+          <a href="assignments.html" class="quick-action"><span>📝</span>Tasks</a>
+          <a href="quiz.html" class="quick-action"><span>📋</span>Tests</a>
+          <a href="analytics.html" class="quick-action"><span>📊</span>Stats</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <section class="dashboard-section">
+        <div class="dashboard-section-header">
+          <h2>Continue Learning</h2>
+          <a href="courses.html" class="section-link">All courses</a>
+        </div>
+        <div class="continue-card">
+          <div class="continue-thumb">🔬</div>
+          <div class="continue-info">
+            <h3>JEE Advanced 2027</h3>
+            <p>Optics — Ray Diagrams · Chapter 3</p>
+            <div class="continue-progress-text"><span>Progress</span><span>68%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
+          </div>
+          <a href="player.html?course=jee-adv-2027&lesson=3-1" class="btn btn-primary">Continue</a>
+        </div>
+      </section>
+
+      <section class="dashboard-section">
+        <div class="dashboard-section-header">
+          <h2>Today's Classes</h2>
+          <a href="timetable.html" class="section-link">Full schedule</a>
+        </div>
+        <div id="timetableList"></div>
+      </section>
+
+      <div class="grid-2" style="gap:24px;margin-bottom:8px">
+        <section class="dashboard-section" style="padding-top:0">
+          <div class="dashboard-section-header">
+            <h2>Assignments</h2>
+            <a href="assignments.html" class="section-link">View all</a>
+          </div>
+          <div id="assignPreview"></div>
+        </section>
+        <section class="dashboard-section" style="padding-top:0">
+          <div class="dashboard-section-header">
+            <h2>Attendance</h2>
+            <span style="font-size:0.875rem;font-weight:700;color:var(--success)">87.5%</span>
+          </div>
+          <div class="streak-card">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:0.8125rem;color:var(--text-tertiary)">42 present / 48 classes</span>
+            </div>
+            <div class="progress-bar" style="margin-bottom:12px"><div class="progress-fill" style="width:87.5%;background:var(--success)"></div></div>
+            <div class="attend-bar" id="attendBar"></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="dashboard-section">
+        <div class="dashboard-section-header">
+          <h2>Performance</h2>
+          <a href="analytics.html" class="section-link">Full analytics</a>
+        </div>
+        <div class="grid-2" style="gap:16px">
+          <div class="streak-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div>
+                <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Overall Score</div>
+                <div style="font-size:2rem;font-weight:800;color:var(--primary-600)">87%</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:0.75rem;color:var(--text-muted)">Rank</div>
+                <div style="font-size:1.25rem;font-weight:800">#3</div>
+                <div style="font-size:0.75rem;color:var(--success)">+12%</div>
+              </div>
+            </div>
+            <div id="subjectBars"></div>
+          </div>
+          <div class="streak-card">
+            <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Weekly Study Hours</div>
+            <div class="mini-chart" id="hoursChart"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-section">
+        <div class="dashboard-section-header"><h2>Announcements</h2></div>
+        <div id="announceList"></div>
+      </section>
+
+      <section class="dashboard-section">
+        <div class="streak-card">
+          <div class="streak-header">
+            <span class="streak-flame" id="streakLottie" style="display:inline-flex;width:48px;height:48px;align-items:center;justify-content:center">🔥</span>
+            <div>
+              <div class="streak-count">12 Day Streak</div>
+              <p style="font-size:0.8125rem;color:var(--text-tertiary)">Don't break the chain!</p>
+            </div>
+          </div>
+          <div class="activity-grid" id="activityGrid"></div>
+        </div>
+      </section>
+
+      <section class="dashboard-section">
+        <div class="dashboard-section-header">
+          <h2>Recent Results</h2>
+          <a href="results.html" class="section-link">All results</a>
+        </div>
+        <div id="recentResults"></div>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Mobile navigation">
+    <a href="dashboard.html" class="bottom-nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="courses.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Courses
+    </a>
+    <a href="player.html?course=jee-adv-2027" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      Learn
+    </a>
+    <a href="assignments.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tests
+    </a>
+    <a href="profile.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </a>
+  </nav>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/lottie.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!App.state.isLoggedIn) App.login();
+      const h = new Date().getHours();
+      const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greeting').textContent = greet + ', Aarav';
+
+      document.getElementById('timetableList').innerHTML = EDUNOVA_DATA.timetable.map(t => {
+        const statusClass = t.status === 'completed' ? 'completed' : 'upcoming';
+        return '<div class="tt-item"><div><div class="tt-time">' + t.time + '</div><div class="tt-end">' + t.end + '</div></div><div><div style="font-weight:600;font-size:0.9375rem">' + t.subject + '</div><div style="font-size:0.8125rem;color:var(--text-tertiary)">' + t.topic + ' · ' + t.faculty + '</div></div><span class="status-pill ' + statusClass + '">' + (t.status === 'completed' ? 'Done' : t.type) + '</span></div>';
+      }).join('');
+
+      const pending = EDUNOVA_DATA.assignments.filter(a => a.status === 'pending');
+      document.getElementById('assignPreview').innerHTML = pending.slice(0, 2).map(a =>
+        '<div class="assign-card pending"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><h4 style="font-size:0.875rem">' + a.title + '</h4><span class="badge badge-warning">Due</span></div><p style="font-size:0.8125rem;margin-bottom:8px">' + a.subject + ' · Due ' + a.due + '</p><a href="assignments.html" class="btn btn-primary btn-sm">Submit</a></div>'
+      ).join('') || '<p style="font-size:0.875rem;color:var(--text-muted)">No pending assignments</p>';
+
+      document.getElementById('attendBar').innerHTML = EDUNOVA_DATA.attendance.recent.map(d =>
+        '<div class="attend-day ' + d.status + '">' + d.date.split(' ')[0] + '</div>'
+      ).join('');
+
+      document.getElementById('subjectBars').innerHTML = EDUNOVA_DATA.analytics.subjectScores.map(s =>
+        '<div class="subject-row"><span style="font-size:0.8125rem;width:80px;font-weight:600">' + s.subject + '</span><div class="subject-bar-bg"><div class="subject-bar-fill" style="width:' + s.score + '%;background:' + s.color + '"></div></div><span style="font-size:0.8125rem;font-weight:700;width:36px;text-align:right">' + s.score + '%</span></div>'
+      ).join('');
+
+      const maxH = Math.max.apply(null, EDUNOVA_DATA.analytics.weeklyHours.map(function(d) { return d.hours; }));
+      document.getElementById('hoursChart').innerHTML = EDUNOVA_DATA.analytics.weeklyHours.map(d =>
+        '<div class="mini-bar-wrap"><div class="mini-bar" style="height:' + ((d.hours / maxH) * 100) + '%"></div><span class="mini-bar-label">' + d.day + '</span></div>'
+      ).join('');
+
+      document.getElementById('announceList').innerHTML = EDUNOVA_DATA.announcements.map(a =>
+        '<div class="announce-card"><div style="display:flex;gap:8px;align-items:center;margin-bottom:4px"><span class="announce-tag">' + a.tag + '</span><span style="font-size:0.75rem;color:var(--text-muted)">' + a.date + '</span></div><h4 style="font-size:0.875rem;margin-bottom:2px">' + a.title + '</h4><p style="font-size:0.8125rem">' + a.body + '</p></div>'
+      ).join('');
+
+      var grid = document.getElementById('activityGrid');
+      var html = '';
+      for (var i = 0; i < 28; i++) {
+        var level = Math.random() > 0.25 ? Math.ceil(Math.random() * 4) : 0;
+        html += '<div class="activity-day ' + (level ? 'level-' + level : '') + '"></div>';
+      }
+      grid.innerHTML = html;
+      if (window.EdunovaLottie) {
+        var sl = document.getElementById('streakLottie');
+        if (sl) EdunovaLottie.mount(sl, 'fire', { size: 48, loop: true, fallback: '🔥' });
+      }
+
+      document.getElementById('recentResults').innerHTML = EDUNOVA_DATA.analytics.recentResults.map(r =>
+        '<div class="leaderboard-item"><div class="leaderboard-avatar" style="font-size:0.75rem">' + r.score + '%</div><div class="leaderboard-info"><h4>' + r.name + '</h4><p>' + r.date + ' · Rank #' + r.rank + '</p></div><div class="leaderboard-score">' + r.score + '%</div></div>'
+      ).join('');
+    });
+  </script>
+</body>
+</html>

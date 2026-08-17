@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Quiz — EDUNOVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="dashboard.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <div class="nav-actions">
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+        <a href="player.html" class="btn btn-ghost btn-sm">← Back to Lesson</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <div class="quiz-container" id="quizContainer">
+      <!-- Quiz UI -->
+    </div>
+  </main>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/lottie.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!App.state.isLoggedIn) App.login();
+
+      const questions = EDUNOVA_DATA.quizQuestions;
+      let current = 0;
+      let answers = {};
+      let timeLeft = 300; // 5 min
+      let timerInterval;
+      let submitted = false;
+
+      const container = document.getElementById('quizContainer');
+
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          const el = document.getElementById('quizTimer');
+          if (el) {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+            if (timeLeft <= 60) el.parentElement.style.background = 'var(--error-light)';
+          }
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showResult();
+          }
+        }, 1000);
+      }
+
+      function renderQuestion() {
+        const q = questions[current];
+        const progress = ((current + 1) / questions.length) * 100;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+
+        container.innerHTML = `
+          <div class="quiz-header">
+            <div class="quiz-progress-info">Question ${current + 1} of ${questions.length}</div>
+            <div class="quiz-timer">⏱ <span id="quizTimer">${m}:${s.toString().padStart(2, '0')}</span></div>
+          </div>
+          <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${progress}%"></div></div>
+          <div class="quiz-question-card">
+            <div class="quiz-question-number">Question ${current + 1}</div>
+            <div class="quiz-question-text">${q.question}</div>
+            <div class="quiz-options">
+              ${q.options.map((opt, i) => `
+                <div class="quiz-option ${answers[current] === i ? 'selected' : ''}" data-i="${i}" onclick="selectOption(${i})">
+                  <div class="quiz-option-letter">${String.fromCharCode(65 + i)}</div>
+                  <span>${opt}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="quiz-nav">
+            <button class="btn btn-secondary" onclick="prevQ()" ${current === 0 ? 'disabled' : ''}>← Previous</button>
+            ${current < questions.length - 1
+              ? `<button class="btn btn-primary" onclick="nextQ()">Next →</button>`
+              : `<button class="btn btn-primary" onclick="submitQuiz()">Submit Quiz</button>`}
+          </div>
+        `;
+      }
+
+      window.selectOption = (i) => {
+        if (submitted) return;
+        answers[current] = i;
+        renderQuestion();
+      };
+
+      window.nextQ = () => {
+        if (current < questions.length - 1) { current++; renderQuestion(); }
+      };
+
+      window.prevQ = () => {
+        if (current > 0) { current--; renderQuestion(); }
+      };
+
+      window.submitQuiz = () => {
+        if (Object.keys(answers).length < questions.length) {
+          if (!confirm('You have unanswered questions. Submit anyway?')) return;
+        }
+        clearInterval(timerInterval);
+        showResult();
+      };
+
+      function showResult() {
+        submitted = true;
+        let correct = 0;
+        questions.forEach((q, i) => {
+          if (answers[i] === q.correct) correct++;
+        });
+        const pct = Math.round((correct / questions.length) * 100);
+        const wrong = questions.length - correct;
+        let message = pct >= 90 ? 'Outstanding performance! 🏆' : pct >= 70 ? 'Great job! Keep it up! 💪' : pct >= 50 ? 'Good effort. Review the topics. 📚' : 'Keep practicing. You\'ll improve! 🌱';
+
+        container.innerHTML = `
+          <div class="quiz-result">
+            <div class="lottie-wrap md" id="quizLottie"></div>
+            <div class="quiz-result-score">
+              <div class="score-value">${pct}%</div>
+              <div class="score-label">Score</div>
+            </div>
+            <h2>${message}</h2>
+            <p>Fundamentals Quiz · Optics</p>
+            <div class="quiz-result-stats">
+              <div class="quiz-result-stat">
+                <div class="value" style="color:var(--success)">${correct}</div>
+                <div class="label">Correct</div>
+              </div>
+              <div class="quiz-result-stat">
+                <div class="value" style="color:var(--error)">${wrong}</div>
+                <div class="label">Wrong</div>
+              </div>
+              <div class="quiz-result-stat">
+                <div class="value">${questions.length}</div>
+                <div class="label">Total</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+              <a href="player.html" class="btn btn-secondary">Back to Lesson</a>
+              <a href="dashboard.html" class="btn btn-primary">Dashboard</a>
+              <button class="btn btn-outline" onclick="location.reload()">Retry Quiz</button>
+            </div>
+          </div>
+        `;
+        if (window.EdunovaLottie) {
+          var anim = pct >= 70 ? 'success' : 'check';
+          EdunovaLottie.mount(document.getElementById('quizLottie'), anim, { size: 120, loop: false, fallback: pct >= 70 ? '🏆' : '✓' });
+          if (pct >= 80) EdunovaLottie.successBurst(document.body);
+        }
+      }
+
+      renderQuestion();
+      startTimer();
+    });
+  </script>
+</body>
+</html>

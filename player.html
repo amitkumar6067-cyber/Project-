@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Course Player — EDUNOVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="dashboard.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <div class="nav-actions">
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+        <a href="dashboard.html" class="btn btn-ghost btn-sm">← Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="player-layout">
+    <div class="player-main">
+      <div class="video-container" id="videoContainer">
+        <div class="video-placeholder">
+          <div class="video-play-btn" id="playBtn" aria-label="Play">▶</div>
+          <p style="opacity:0.7;font-size:0.875rem">Optics — Ray Diagrams</p>
+        </div>
+        <div class="video-controls">
+          <div class="video-progress"><div class="video-progress-fill"></div></div>
+          <div class="video-controls-row">
+            <div class="video-controls-left">
+              <button class="video-ctrl-btn" id="playCtrl">▶</button>
+              <span class="video-time">12:34 / 38:00</span>
+            </div>
+            <div class="video-controls-right">
+              <button class="video-ctrl-btn" title="Speed">1x</button>
+              <button class="video-ctrl-btn" title="Fullscreen">⛶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lesson-info">
+        <h2>Optics — Ray Diagrams</h2>
+        <p>Learn how to construct and interpret ray diagrams for mirrors and lenses. This lesson covers the fundamental rules of reflection and the construction of images.</p>
+        <div class="lesson-actions">
+          <button class="btn btn-secondary btn-sm" onclick="App.toast('Notes opened (Demo)','info')">📄 Notes</button>
+          <button class="btn btn-secondary btn-sm" onclick="App.toast('Resources downloaded (Demo)','success')">⬇️ Resources</button>
+          <a href="quiz.html" class="btn btn-outline btn-sm">📝 Take Quiz</a>
+          <button class="btn btn-primary btn-sm" id="markComplete">✓ Mark Complete</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:20px">
+          <button class="btn btn-ghost btn-sm">← Previous</button>
+          <button class="btn btn-ghost btn-sm">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="player-sidebar">
+      <div class="curriculum-header">
+        <h3>Course Curriculum</h3>
+        <p style="font-size:0.8125rem;color:var(--text-muted)">JEE Advanced 2027 · 68% complete</p>
+      </div>
+      <div id="playerCurriculum"></div>
+    </aside>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/lottie.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!App.state.isLoggedIn) App.login();
+
+      const curr = document.getElementById('playerCurriculum');
+      curr.innerHTML = EDUNOVA_DATA.curriculum.map((ch, i) => `
+        <div class="curriculum-chapter ${i === 2 ? 'open' : ''}">
+          <div class="chapter-header" onclick="this.parentElement.classList.toggle('open')">
+            <div>
+              <h4>${ch.title}</h4>
+              <span class="chapter-meta">${ch.lessons.length} lessons</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="chapter-lessons">
+            ${ch.lessons.map(l => `
+              <div class="lesson-item ${l.current ? 'active' : ''} ${l.locked ? 'locked' : ''}" ${!l.locked ? `onclick="selectLesson('${l.title}')"` : ''}>
+                <span class="lesson-item-icon">${l.completed ? '✅' : l.locked ? '🔒' : l.type === 'quiz' ? '📝' : l.type === 'test' ? '📋' : '▶'}</span>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.title}</span>
+                <span class="lesson-item-duration">${l.duration}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      let playing = false;
+      document.getElementById('playBtn').addEventListener('click', togglePlay);
+      document.getElementById('playCtrl').addEventListener('click', togglePlay);
+
+      function togglePlay() {
+        playing = !playing;
+        document.getElementById('playBtn').textContent = playing ? '❚❚' : '▶';
+        document.getElementById('playCtrl').textContent = playing ? '❚❚' : '▶';
+        if (playing) App.toast('Playing demo video...', 'info');
+      }
+
+      document.getElementById('markComplete').addEventListener('click', function() {
+        this.textContent = '✓ Completed';
+        this.disabled = true;
+        App.toast('Lesson marked complete!', 'success');
+        if (window.EdunovaLottie) EdunovaLottie.successBurst(document.body);
+      });
+
+      window.selectLesson = (title) => {
+        document.querySelector('.lesson-info h2').textContent = title;
+        document.querySelector('.video-placeholder p').textContent = title;
+        App.toast('Loading: ' + title, 'info');
+      };
+    });
+  </script>
+</body>
+</html>

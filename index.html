@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>EDUNOVA — Learn Better. Go Further.</title>
+  <meta name="description" content="Personalized learning, expert faculty and a smarter path to your goals. Premium education platform for JEE, NEET, UPSC and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container navbar-inner">
+      <a href="index.html" class="logo" aria-label="Edunova Home">
+        <div class="logo-mark">E</div>
+        EDUNOVA
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="pages/courses.html" class="nav-link">Courses</a>
+        <a href="pages/results.html" class="nav-link">Results</a>
+        <a href="pages/faculty.html" class="nav-link">Faculty</a>
+        <a href="pages/about.html" class="nav-link">About</a>
+        <a href="pages/resources.html" class="nav-link">Resources</a>
+        <a href="pages/contact.html" class="nav-link">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-search-btn" id="searchBtn" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+
+        <div data-auth="logged-in" style="display:none">
+          <button class="nav-notif-btn" id="notifBtn" aria-label="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-badge" id="notifBadge">3</span>
+          </button>
+        </div>
+
+        <div class="profile-dropdown" data-auth="logged-in" style="display:none">
+          <button class="profile-btn" id="profileBtn" aria-label="Profile menu">
+            <div class="profile-avatar">AM</div>
+          </button>
+          <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu-header">
+              <h4>Aarav Mehta</h4>
+              <p>JEE Advanced 2027</p>
+            </div>
+            <a href="pages/dashboard.html" class="profile-menu-item">📊 Dashboard</a>
+            <a href="pages/profile.html" class="profile-menu-item">👤 Profile</a>
+            <a href="pages/profile.html#settings" class="profile-menu-item">⚙️ Settings</a>
+            <button class="profile-menu-item danger" data-action="logout">🚪 Logout</button>
+          </div>
+        </div>
+
+        <a href="#" class="btn btn-ghost btn-sm nav-login-btn" data-auth="logged-out" data-action="demo-login">Student Login</a>
+        <a href="pages/courses.html" class="btn btn-primary btn-sm nav-enroll-btn">Enroll Now</a>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Notification Panel -->
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-panel-header">
+      <h3>Notifications</h3>
+      <button class="btn btn-ghost btn-sm" id="markAllRead">Mark all read</button>
+    </div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+      <a href="index.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <button id="mobileMenuClose" aria-label="Close menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="mobile-nav-links">
+      <a href="index.html" class="mobile-nav-link">Home</a>
+      <a href="pages/courses.html" class="mobile-nav-link">Courses</a>
+      <a href="pages/results.html" class="mobile-nav-link">Results</a>
+      <a href="pages/faculty.html" class="mobile-nav-link">Faculty</a>
+      <a href="pages/about.html" class="mobile-nav-link">About</a>
+      <a href="pages/resources.html" class="mobile-nav-link">Resources</a>
+      <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
+    </div>
+    <div class="mobile-menu-footer">
+      <a href="#" class="btn btn-secondary w-full" data-action="demo-login">Student Login</a>
+      <a href="pages/courses.html" class="btn btn-primary w-full">Enroll Now</a>
+    </div>
+  </div>
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <div class="search-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search courses, faculty, resources..." aria-label="Search">
+        <button id="searchClose" aria-label="Close search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <main class="page-content">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-bg-shapes">
+        <div class="hero-shape hero-shape-1"></div>
+        <div class="hero-shape hero-shape-2"></div>
+      </div>
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="hero-badge-dot"></span>
+              Trusted by 25,000+ students
+            </div>
+            <h1>Learn Better.<br>Go Further.</h1>
+            <p class="hero-subtitle">Personalized learning, expert faculty and a smarter path to your goals. Built for ambitious students preparing for JEE, NEET, UPSC and more.</p>
+            <div class="hero-ctas">
+              <a href="pages/courses.html" class="btn btn-primary btn-lg">Explore Courses</a>
+              <a href="pages/results.html" class="btn btn-secondary btn-lg">View Results</a>
+            </div>
+            <div class="hero-trust">
+              <div class="hero-avatars">
+                <div class="hero-avatar">AR</div>
+                <div class="hero-avatar">RK</div>
+                <div class="hero-avatar">SI</div>
+                <div class="hero-avatar">AV</div>
+              </div>
+              <span>Join top rankers who chose Edunova</span>
+            </div>
+          </div>
+
+          <div class="hero-visual">
+            <div class="float-obj float-obj-1">🔥 12 Day Streak</div>
+            <div class="float-obj float-obj-2">📈 92% Quiz Score</div>
+            <div class="float-obj float-obj-3">🏆 AIR Ready</div>
+
+            <div class="hero-dashboard">
+              <div class="dash-header">
+                <div>
+                  <h4>JEE Advanced 2027</h4>
+                  <p style="font-size:0.75rem;color:var(--text-muted)">Continue learning</p>
+                </div>
+                <div class="dash-progress-ring">
+                  <svg width="56" height="56" viewBox="0 0 56 56">
+                    <defs>
+                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#6366f1"/>
+                        <stop offset="100%" stop-color="#8b5cf6"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="bg" cx="28" cy="28" r="22"/>
+                    <circle class="fg" cx="28" cy="28" r="22"/>
+                  </svg>
+                  <div class="dash-progress-text">68%</div>
+                </div>
+              </div>
+              <div class="dash-stats">
+                <div class="dash-stat">
+                  <div class="dash-stat-label">Lessons</div>
+                  <div class="dash-stat-value">163/240</div>
+                </div>
+                <div class="dash-stat">
+                  <div class="dash-stat-label">Quiz Avg</div>
+                  <div class="dash-stat-value">87%</div>
+                </div>
+              </div>
+              <div class="dash-lesson">
+                <div class="dash-lesson-icon">▶</div>
+                <div class="dash-lesson-info">
+                  <h5>Optics — Ray Diagrams</h5>
+                  <p>Chapter 3 · 38 min remaining</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+      <div class="container">
+        <div class="proof-grid">
+          <div class="proof-item" data-reveal>
+            <div class="proof-number" data-counter="25000" data-suffix="+">0</div>
+            <div class="proof-label">Students</div>
+          </div>
+          <div class="proof-item" data-reveal>
+            <div class="proof-number" data-counter="150" data-suffix="+">0</div>
+            <div class="proof-label">Expert Faculty</div>
+          </div>
+          <div class="proof-item" data-reveal>
+            <div class="proof-number" data-counter="98" data-suffix="%">0</div>
+            <div class="proof-label">Student Satisfaction</div>
+          </div>
+          <div class="proof-item" data-reveal>
+            <div class="proof-number" data-counter="10" data-suffix="+">0</div>
+            <div class="proof-label">Years of Excellence</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories-section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Learning Paths</span>
+          <h2>Explore Your Learning Path</h2>
+          <p>From competitive exams to school excellence — find the right program for your goals.</p>
+        </div>
+        <div class="category-grid" id="categoryGrid"></div>
+      </div>
+    </section>
+
+    <!-- Featured Courses -->
+    <section class="courses-section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Featured</span>
+          <h2>Popular Courses</h2>
+          <p>Handpicked programs designed by India's top educators.</p>
+        </div>
+        <div class="course-grid" id="courseGrid"></div>
+        <div class="text-center" style="margin-top:40px">
+          <a href="pages/courses.html" class="btn btn-outline btn-lg">View All Courses</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Preview -->
+    <section class="results-section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Success Stories</span>
+          <h2>Our Students. Our Results.</h2>
+          <p>Consistent excellence across JEE, NEET, UPSC and more.</p>
+        </div>
+        <div class="results-grid" id="resultsGrid"></div>
+        <div class="text-center" style="margin-top:40px">
+          <a href="pages/results.html" class="btn btn-outline btn-lg">See All Results</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Faculty Preview -->
+    <section class="faculty-section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Expert Educators</span>
+          <h2>Learn from the Best</h2>
+          <p>Experienced faculty from IITs, AIIMS, and top institutions.</p>
+        </div>
+        <div class="faculty-grid" id="facultyGrid"></div>
+        <div class="text-center" style="margin-top:40px">
+          <a href="pages/faculty.html" class="btn btn-outline btn-lg">Meet All Faculty</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials-section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Testimonials</span>
+          <h2>What Students Say</h2>
+          <p>Real experiences from students who achieved their goals.</p>
+        </div>
+        <div class="testimonial-carousel">
+          <div class="testimonial-track" id="testimonialTrack"></div>
+          <div class="carousel-controls" id="carouselDots"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="section" style="background:var(--bg-secondary)">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Why Edunova</span>
+          <h2>Why Students Choose Us</h2>
+          <p>Built for results — not just content.</p>
+        </div>
+        <div class="grid-3" id="whyGrid" style="max-width:1000px;margin:0 auto"></div>
+      </div>
+    </section>
+
+    <!-- Batches -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Admissions Open</span>
+          <h2>Upcoming Batches</h2>
+          <p>Limited seats. Secure your spot early.</p>
+        </div>
+        <div class="grid-2" id="batchesGrid" style="max-width:800px;margin:0 auto"></div>
+        <div class="text-center" style="margin-top:32px">
+          <a href="pages/contact.html" class="btn btn-primary btn-lg">Apply for Admission</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Campus Gallery -->
+    <section class="section" style="background:var(--bg-secondary)">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Campus</span>
+          <h2>Our Learning Environment</h2>
+          <p>Smart classrooms, labs and spaces designed for focused learning.</p>
+        </div>
+        <div class="grid-3" id="galleryGrid" style="max-width:900px;margin:0 auto"></div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">Plans</span>
+          <h2>Choose Your Path</h2>
+          <p>Flexible plans designed for every stage of your preparation.</p>
+        </div>
+        <div class="pricing-grid" id="pricingGrid"></div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <span class="section-label">FAQ</span>
+          <h2>Frequently Asked Questions</h2>
+          <p>Everything you need to know about learning with Edunova.</p>
+        </div>
+        <div class="faq-list" id="faqList"></div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content" data-reveal>
+          <h2>Ready to Start Your Journey?</h2>
+          <p>Join 25,000+ students who chose a smarter way to learn. Explore demo to experience the full student portal.</p>
+          <div class="cta-buttons">
+            <a href="#" class="btn btn-primary btn-lg" data-action="demo-login">Explore Demo</a>
+            <a href="pages/contact.html" class="btn btn-outline btn-lg">Talk to Us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="color:white">
+            <div class="logo-mark">E</div>
+            EDUNOVA
+          </a>
+          <p>Learn Better. Go Further. A smarter learning experience for ambitious students.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Courses</h4>
+          <a href="pages/courses.html">JEE</a>
+          <a href="pages/courses.html">NEET</a>
+          <a href="pages/courses.html">UPSC</a>
+          <a href="pages/courses.html">SSC & Banking</a>
+          <a href="pages/courses.html">School Classes</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="pages/about.html">About Us</a>
+          <a href="pages/faculty.html">Faculty</a>
+          <a href="pages/results.html">Results</a>
+          <a href="pages/contact.html">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="pages/resources.html">Study Material</a>
+          <a href="pages/resources.html">Mock Tests</a>
+          <a href="pages/resources.html">Previous Papers</a>
+          <a href="pages/resources.html">Blog</a>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <a href="pages/contact.html">Help Center</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#" data-action="demo-login">Student Portal</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Edunova. All rights reserved. Demo portfolio project.</span>
+        <span>Made for coaching institutes, schools & education businesses.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/lottie.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Render homepage content
+    document.addEventListener('DOMContentLoaded', () => {
+      // Categories
+      const catGrid = document.getElementById('categoryGrid');
+      if (catGrid) {
+        catGrid.innerHTML = EDUNOVA_DATA.categories.map(c => `
+          <a href="pages/courses.html?cat=${c.id}" class="category-card" data-reveal>
+            <div class="category-icon">${c.icon}</div>
+            <h3>${c.name}</h3>
+            <p>${c.desc}</p>
+            <span class="category-count">${c.count} courses</span>
+          </a>
+        `).join('');
+      }
+
+      // Courses
+      const courseGrid = document.getElementById('courseGrid');
+      if (courseGrid) {
+        courseGrid.innerHTML = EDUNOVA_DATA.courses.slice(0, 3).map(c => `
+          <div class="course-card" data-reveal>
+            <div class="course-image">
+              <div class="course-image-bg">${c.image}</div>
+              <div class="course-badges">
+                ${c.bestseller ? '<span class="badge badge-bestseller">Bestseller</span>' : ''}
+              </div>
+            </div>
+            <div class="course-body">
+              <div class="course-category">${c.category}</div>
+              <h3 class="course-title">${c.title}</h3>
+              <div class="course-meta">
+                <span class="course-meta-item">👤 ${c.faculty}</span>
+                <span class="course-rating">★ ${c.rating}</span>
+                <span class="course-meta-item">${c.students.toLocaleString()} students</span>
+              </div>
+              <div class="course-footer">
+                <div class="course-price">
+                  <span class="course-price-current">${App.formatPrice(c.price)}</span>
+                  <span class="course-price-original">${App.formatPrice(c.originalPrice)}</span>
+                </div>
+                <div class="course-actions">
+                  <a href="pages/course-details.html?id=${c.id}" class="btn btn-primary btn-sm">View</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Results
+      const resultsGrid = document.getElementById('resultsGrid');
+      if (resultsGrid) {
+        resultsGrid.innerHTML = EDUNOVA_DATA.toppers.slice(0, 4).map(t => `
+          <div class="result-card" data-reveal>
+            <span class="result-rank">${t.rank}</span>
+            <div class="result-avatar">${t.avatar}</div>
+            <h3 class="result-name">${t.name}</h3>
+            <p class="result-exam">${t.exam} · ${t.year}</p>
+            <div class="result-score">${t.score}</div>
+          </div>
+        `).join('');
+      }
+
+      // Faculty
+      const facultyGrid = document.getElementById('facultyGrid');
+      if (facultyGrid) {
+        facultyGrid.innerHTML = EDUNOVA_DATA.faculty.slice(0, 4).map(f => `
+          <a href="pages/faculty.html#${f.id}" class="faculty-card" data-reveal>
+            <div class="faculty-portrait">${f.name.split(' ').map(n => n[0]).join('').slice(0, 2)}</div>
+            <h3 class="faculty-name">${f.name}</h3>
+            <div class="faculty-subject">${f.subject}</div>
+            <p class="faculty-exp">${f.experience} · ${f.qualifications}</p>
+            <div class="faculty-rating">★ ${f.rating}</div>
+          </a>
+        `).join('');
+      }
+
+      // Testimonials
+      const track = document.getElementById('testimonialTrack');
+      const dots = document.getElementById('carouselDots');
+      if (track) {
+        track.innerHTML = EDUNOVA_DATA.testimonials.map(t => `
+          <div class="testimonial-card">
+            <div class="testimonial-stars">${'★'.repeat(t.rating)}</div>
+            <p class="testimonial-text">"${t.text}"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">${t.avatar}</div>
+              <div class="testimonial-info">
+                <h4>${t.name}</h4>
+                <p>${t.exam}</p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        const total = EDUNOVA_DATA.testimonials.length;
+        let current = 0;
+        const getVisible = () => window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+
+        const updateCarousel = () => {
+          const visible = getVisible();
+          const max = Math.max(0, total - visible);
+          current = Math.min(current, max);
+          const cardWidth = track.children[0]?.offsetWidth || 0;
+          const gap = 20;
+          track.style.transform = `translateX(-${current * (cardWidth + gap)}px)`;
+          if (dots) {
+            dots.innerHTML = Array.from({ length: max + 1 }, (_, i) =>
+              `<button class="carousel-dot ${i === current ? 'active' : ''}" data-i="${i}" aria-label="Slide ${i + 1}"></button>`
+            ).join('');
+            dots.querySelectorAll('.carousel-dot').forEach(d => {
+              d.addEventListener('click', () => { current = +d.dataset.i; updateCarousel(); });
+            });
+          }
+        };
+        updateCarousel();
+        window.addEventListener('resize', updateCarousel);
+        setInterval(() => {
+          const visible = getVisible();
+          const max = Math.max(0, total - visible);
+          current = current >= max ? 0 : current + 1;
+          updateCarousel();
+        }, 5000);
+      }
+
+      // Why Choose Us
+      const whyGrid = document.getElementById('whyGrid');
+      if (whyGrid && EDUNOVA_DATA.whyUs) {
+        whyGrid.innerHTML = EDUNOVA_DATA.whyUs.map(w => `
+          <div class="card" style="padding:24px;text-align:center" data-reveal>
+            <div style="font-size:2rem;margin-bottom:12px">${w.icon}</div>
+            <h3 style="font-size:1.0625rem;margin-bottom:8px">${w.title}</h3>
+            <p style="font-size:0.875rem">${w.desc}</p>
+          </div>
+        `).join('');
+      }
+
+      // Batches
+      const batchesGrid = document.getElementById('batchesGrid');
+      if (batchesGrid && EDUNOVA_DATA.batches) {
+        batchesGrid.innerHTML = EDUNOVA_DATA.batches.map(b => `
+          <div class="card" style="padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px" data-reveal>
+            <div>
+              <h4 style="font-size:1rem;margin-bottom:4px">${b.name}</h4>
+              <p style="font-size:0.8125rem">${b.time} · Starts ${b.start}</p>
+            </div>
+            <span class="badge badge-warning">${b.seats}</span>
+          </div>
+        `).join('');
+      }
+
+      // Gallery
+      const galleryGrid = document.getElementById('galleryGrid');
+      if (galleryGrid && EDUNOVA_DATA.gallery) {
+        galleryGrid.innerHTML = EDUNOVA_DATA.gallery.map(g => `
+          <div class="card" style="padding:32px;text-align:center" data-reveal>
+            <div style="font-size:2.5rem;margin-bottom:12px">${g.emoji}</div>
+            <h4 style="font-size:0.9375rem">${g.title}</h4>
+          </div>
+        `).join('');
+      }
+
+      // Pricing
+      const pricingGrid = document.getElementById('pricingGrid');
+      if (pricingGrid) {
+        pricingGrid.innerHTML = EDUNOVA_DATA.pricing.map(p => `
+          <div class="pricing-card ${p.featured ? 'featured' : ''}" data-reveal>
+            <h3 class="pricing-name">${p.name}</h3>
+            <div class="pricing-price">${App.formatPrice(p.price)}<span>${p.period}</span></div>
+            <p class="pricing-desc">${p.desc}</p>
+            <div class="pricing-features">
+              ${p.features.map(f => `
+                <div class="pricing-feature">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                  ${f}
+                </div>
+              `).join('')}
+            </div>
+            <a href="pages/contact.html" class="btn ${p.featured ? 'btn-primary' : 'btn-secondary'}">Choose Plan</a>
+          </div>
+        `).join('');
+      }
+
+      // FAQ
+      const faqList = document.getElementById('faqList');
+      if (faqList) {
+        faqList.innerHTML = EDUNOVA_DATA.faqs.map((f, i) => `
+          <div class="faq-item ${i === 0 ? 'active' : ''}">
+            <button class="faq-question" aria-expanded="${i === 0}">
+              ${f.q}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">${f.a}</div>
+            </div>
+          </div>
+        `).join('');
+        App.initFAQ();
+      }
+
+      // Re-init reveal after dynamic content
+      App.initScrollReveal();
+      App.initCounters();
+    });
+  </script>
+</body>
+</html>

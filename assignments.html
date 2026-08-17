@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Assignments — EDUNOVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <style>
+    .assign-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 16px; margin-bottom: 12px; }
+    .assign-card.pending { border-left: 3px solid var(--warning); }
+    .assign-card.submitted { border-left: 3px solid var(--info); }
+    .assign-card.graded { border-left: 3px solid var(--success); }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+  </style>
+</head>
+<body class="dashboard-page has-bottom-nav">
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="dashboard.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <div class="nav-actions">
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+        <a href="dashboard.html" class="btn btn-ghost btn-sm">Back</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <div class="container" style="padding-top:24px;padding-bottom:48px;max-width:720px">
+      <h1 style="font-size:1.5rem;margin-bottom:4px">Assignments</h1>
+      <p style="margin-bottom:20px">Track and submit your work</p>
+      <div class="filter-tabs" id="assignTabs">
+        <button class="filter-tab active" data-f="all">All</button>
+        <button class="filter-tab" data-f="pending">Pending</button>
+        <button class="filter-tab" data-f="submitted">Submitted</button>
+        <button class="filter-tab" data-f="graded">Graded</button>
+      </div>
+      <div id="assignList"></div>
+    </div>
+  </main>
+
+  <!-- Submit Modal -->
+  <div class="modal-overlay" id="submitModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Submit Assignment</h3>
+        <button onclick="closeSubmit()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="submitTitle" style="font-weight:600;margin-bottom:16px"></p>
+        <div class="form-group">
+          <label class="form-label">Upload file (demo)</label>
+          <input class="form-input" type="text" placeholder="assignment.pdf" readonly value="optics_set_b.pdf">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes (optional)</label>
+          <textarea class="form-textarea" rows="3" placeholder="Any comments for your teacher..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeSubmit()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmSubmit()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+    <a href="courses.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+    <a href="player.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Learn</a>
+    <a href="assignments.html" class="bottom-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tests</a>
+    <a href="profile.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</a>
+  </nav>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/lottie.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    var currentSubmitId = null;
+    var assignments = JSON.parse(JSON.stringify(EDUNOVA_DATA.assignments));
+
+    function render(filter) {
+      filter = filter || 'all';
+      var list = filter === 'all' ? assignments : assignments.filter(function(a) { return a.status === filter; });
+      document.getElementById('assignList').innerHTML = list.map(function(a) {
+        var badge = a.status === 'pending' ? '<span class="badge badge-warning">Pending</span>' :
+          a.status === 'submitted' ? '<span class="badge badge-primary">Submitted</span>' :
+          '<span class="badge badge-success">Graded</span>';
+        var action = '';
+        if (a.status === 'pending') {
+          action = '<button class="btn btn-primary btn-sm" onclick="openSubmit(' + a.id + ')">Submit</button>';
+        } else if (a.status === 'graded') {
+          action = '<div style="font-size:0.875rem"><strong>' + a.marks + '/' + a.maxMarks + '</strong></div>';
+        }
+        var feedback = a.feedback ? '<p style="font-size:0.8125rem;margin-top:8px;padding:8px 12px;background:var(--bg-secondary);border-radius:8px"><em>Teacher: ' + a.feedback + '</em></p>' : '';
+        return '<div class="assign-card ' + a.status + '"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px"><div><h4 style="font-size:0.9375rem;margin-bottom:4px">' + a.title + '</h4><p style="font-size:0.8125rem">' + a.subject + ' · ' + a.course + '</p></div>' + badge + '</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><span style="font-size:0.8125rem;color:var(--text-muted)">Due: ' + a.due + (a.maxMarks ? ' · ' + a.maxMarks + ' marks' : '') + '</span>' + action + '</div>' + feedback + '</div>';
+      }).join('') || '<div class="empty-state"><div class="empty-state-icon">📝</div><h3>No assignments</h3><p>Nothing here yet</p></div>';
+    }
+
+    function openSubmit(id) {
+      currentSubmitId = id;
+      var a = assignments.find(function(x) { return x.id === id; });
+      document.getElementById('submitTitle').textContent = a.title;
+      document.getElementById('submitModal').classList.add('active');
+    }
+    function closeSubmit() {
+      document.getElementById('submitModal').classList.remove('active');
+    }
+    function confirmSubmit() {
+      var a = assignments.find(function(x) { return x.id === currentSubmitId; });
+      if (a) { a.status = 'submitted'; }
+      closeSubmit();
+      App.toast('Assignment submitted successfully!', 'success');
+      if (window.EdunovaLottie) EdunovaLottie.successBurst(document.body);
+      render(document.querySelector('#assignTabs .active').dataset.f);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!App.state.isLoggedIn) App.login();
+      render();
+      document.querySelectorAll('#assignTabs .filter-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('#assignTabs .filter-tab').forEach(function(t) { t.classList.remove('active'); });
+          tab.classList.add('active');
+          render(tab.dataset.f);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

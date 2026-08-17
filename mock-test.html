@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mock Test — EDUNOVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="dashboard.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <div class="nav-actions">
+        <div class="quiz-timer" id="mockTimer">⏱ 2:59:45</div>
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mock-layout">
+    <div class="mock-main">
+      <div id="mockContent">
+        <div class="card" style="padding:32px;max-width:640px;margin:40px auto;text-align:center">
+          <h2 style="margin-bottom:12px">Physics Full Length Mock</h2>
+          <p style="margin-bottom:24px">60 Questions · 3 Hours · +4 for correct, −1 for wrong</p>
+          <div style="text-align:left;margin-bottom:24px;font-size:0.9375rem;color:var(--text-secondary)">
+            <p style="margin-bottom:8px">• Read each question carefully before answering.</p>
+            <p style="margin-bottom:8px">• You can mark questions for review and return later.</p>
+            <p style="margin-bottom:8px">• Use the navigation palette to jump between questions.</p>
+            <p>• Once submitted, you cannot change answers.</p>
+          </div>
+          <button class="btn btn-primary btn-lg" id="startMock">Start Exam</button>
+        </div>
+      </div>
+    </div>
+    <aside class="mock-sidebar" id="mockSidebar" style="display:none">
+      <h3 style="font-size:0.9375rem;margin-bottom:16px">Question Palette</h3>
+      <div class="palette-grid" id="paletteGrid"></div>
+      <div class="palette-legend">
+        <div class="palette-legend-item"><div class="palette-legend-dot" style="background:var(--primary-600)"></div> Current</div>
+        <div class="palette-legend-item"><div class="palette-legend-dot" style="background:var(--success)"></div> Answered</div>
+        <div class="palette-legend-item"><div class="palette-legend-dot" style="background:var(--warning)"></div> Review</div>
+        <div class="palette-legend-item"><div class="palette-legend-dot" style="background:var(--bg-tertiary);border:1px solid var(--border-medium)"></div> Not visited</div>
+      </div>
+      <button class="btn btn-primary w-full" style="margin-top:24px" id="submitMock">Submit Exam</button>
+    </aside>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/lottie.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!App.state.isLoggedIn) App.login();
+
+      const questions = EDUNOVA_DATA.quizQuestions.concat(EDUNOVA_DATA.quizQuestions).concat(EDUNOVA_DATA.quizQuestions).slice(0, 15);
+      let current = 0;
+      let answers = {};
+      let review = {};
+      let timeLeft = 10800;
+      let started = false;
+
+      document.getElementById('startMock').addEventListener('click', () => {
+        started = true;
+        document.getElementById('mockSidebar').style.display = '';
+        renderPalette();
+        renderQ();
+        setInterval(() => {
+          timeLeft--;
+          const h = Math.floor(timeLeft / 3600);
+          const m = Math.floor((timeLeft % 3600) / 60);
+          const s = timeLeft % 60;
+          document.getElementById('mockTimer').textContent = `⏱ ${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+          if (timeLeft <= 0) submitExam();
+        }, 1000);
+      });
+
+      function renderPalette() {
+        document.getElementById('paletteGrid').innerHTML = questions.map((_, i) => `
+          <button class="palette-btn ${i === current ? 'current' : ''} ${answers[i] !== undefined ? 'answered' : ''} ${review[i] ? 'review' : ''}" onclick="goTo(${i})">${i + 1}</button>
+        `).join('');
+      }
+
+      function renderQ() {
+        const q = questions[current];
+        document.getElementById('mockContent').innerHTML = `
+          <div class="quiz-question-card" style="max-width:720px;margin:0 auto">
+            <div class="quiz-question-number">Question ${current + 1} of ${questions.length}</div>
+            <div class="quiz-question-text">${q.question}</div>
+            <div class="quiz-options">
+              ${q.options.map((opt, i) => `
+                <div class="quiz-option ${answers[current] === i ? 'selected' : ''}" onclick="selectAns(${i})">
+                  <div class="quiz-option-letter">${String.fromCharCode(65 + i)}</div>
+                  <span>${opt}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:24px;flex-wrap:wrap;gap:8px">
+              <button class="btn btn-secondary btn-sm" onclick="prevQ()" ${current === 0 ? 'disabled' : ''}>← Prev</button>
+              <button class="btn btn-outline btn-sm" onclick="toggleReview()">${review[current] ? 'Unmark Review' : 'Mark for Review'}</button>
+              <button class="btn btn-primary btn-sm" onclick="nextQ()">${current < questions.length - 1 ? 'Next →' : 'Finish'}</button>
+            </div>
+          </div>
+        `;
+        renderPalette();
+      }
+
+      window.selectAns = (i) => { answers[current] = i; renderQ(); };
+      window.goTo = (i) => { current = i; renderQ(); };
+      window.nextQ = () => { if (current < questions.length - 1) { current++; renderQ(); } };
+      window.prevQ = () => { if (current > 0) { current--; renderQ(); } };
+      window.toggleReview = () => { review[current] = !review[current]; renderQ(); };
+
+      document.getElementById('submitMock').addEventListener('click', () => {
+        if (confirm('Submit the exam? You cannot change answers after submission.')) submitExam();
+      });
+
+      function submitExam() {
+        let correct = 0;
+        questions.forEach((q, i) => { if (answers[i] === q.correct) correct++; });
+        const pct = Math.round((correct / questions.length) * 100);
+        document.getElementById('mockSidebar').style.display = 'none';
+        document.getElementById('mockContent').innerHTML = `
+          <div class="quiz-result">
+            <div class="lottie-wrap md" id="mockLottie"></div>
+            <div class="quiz-result-score">
+              <div class="score-value">${pct}%</div>
+              <div class="score-label">Score</div>
+            </div>
+            <h2>${pct >= 80 ? 'Excellent performance! 🏆' : pct >= 60 ? 'Good effort! 💪' : 'Keep practicing 📚'}</h2>
+            <p>Physics Full Length Mock</p>
+            <div class="quiz-result-stats">
+              <div class="quiz-result-stat"><div class="value" style="color:var(--success)">${correct}</div><div class="label">Correct</div></div>
+              <div class="quiz-result-stat"><div class="value" style="color:var(--error)">${questions.length - correct}</div><div class="label">Wrong</div></div>
+              <div class="quiz-result-stat"><div class="value">${Object.keys(answers).length}</div><div class="label">Attempted</div></div>
+            </div>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+              <a href="dashboard.html" class="btn btn-primary">Dashboard</a>
+              <a href="quiz.html" class="btn btn-secondary">Practice Quiz</a>
+            </div>
+          </div>
+        `;
+        if (window.EdunovaLottie) {
+          EdunovaLottie.mount(document.getElementById('mockLottie'), pct >= 70 ? 'success' : 'check', { size: 120, loop: false, fallback: '✓' });
+          if (pct >= 80) EdunovaLottie.successBurst(document.body);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

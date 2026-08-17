@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Results — EDUNOVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/home.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body class="has-bottom-nav">
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="../index.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="courses.html" class="nav-link">Courses</a>
+        <a href="results.html" class="nav-link active">Results</a>
+        <a href="faculty.html" class="nav-link">Faculty</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="resources.html" class="nav-link">Resources</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+        <a href="#" class="btn btn-ghost btn-sm nav-login-btn" data-auth="logged-out" data-action="demo-login">Student Login</a>
+        <div class="profile-dropdown" data-auth="logged-in" style="display:none">
+          <button class="profile-btn" id="profileBtn"><div class="profile-avatar">AM</div></button>
+          <div class="profile-menu" id="profileMenu">
+            <a href="dashboard.html" class="profile-menu-item">Dashboard</a>
+            <button class="profile-menu-item danger" data-action="logout">Logout</button>
+          </div>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+      <a href="../index.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <button id="mobileMenuClose"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="mobile-nav-links">
+      <a href="../index.html" class="mobile-nav-link">Home</a>
+      <a href="courses.html" class="mobile-nav-link">Courses</a>
+      <a href="results.html" class="mobile-nav-link">Results</a>
+      <a href="faculty.html" class="mobile-nav-link">Faculty</a>
+      <a href="about.html" class="mobile-nav-link">About</a>
+      <a href="contact.html" class="mobile-nav-link">Contact</a>
+    </div>
+  </div>
+
+  <main class="page-content">
+    <section style="padding:48px 0;background:linear-gradient(135deg,var(--primary-700),var(--violet-600));color:white;text-align:center">
+      <div class="container">
+        <span class="section-label" style="color:rgba(255,255,255,0.7)">Success Stories</span>
+        <h1 style="color:white;margin-bottom:12px">Our Students. Our Results.</h1>
+        <p style="color:rgba(255,255,255,0.85);max-width:500px;margin:0 auto">Consistent excellence across India's toughest competitive exams.</p>
+        <div class="proof-grid" style="margin-top:40px;max-width:700px;margin-left:auto;margin-right:auto">
+          <div class="proof-item"><div class="proof-number" style="color:white" data-counter="98" data-suffix="%">0</div><div class="proof-label" style="color:rgba(255,255,255,0.7)">Success Rate</div></div>
+          <div class="proof-item"><div class="proof-number" style="color:white" data-counter="450" data-suffix="+">0</div><div class="proof-label" style="color:rgba(255,255,255,0.7)">Selections 2025</div></div>
+          <div class="proof-item"><div class="proof-number" style="color:white" data-counter="12" data-suffix="">0</div><div class="proof-label" style="color:rgba(255,255,255,0.7)">AIR under 50</div></div>
+          <div class="proof-item"><div class="proof-number" style="color:white" data-counter="85" data-suffix="%">0</div><div class="proof-label" style="color:rgba(255,255,255,0.7)">Selection Rate</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:48px 0">
+      <div class="container">
+        <h2 style="text-align:center;margin-bottom:32px">Top Rankers</h2>
+        <div class="results-grid" id="toppersGrid"></div>
+      </div>
+    </section>
+
+    <section style="padding:48px 0;background:var(--bg-secondary)">
+      <div class="container">
+        <h2 style="text-align:center;margin-bottom:32px">Student Testimonials</h2>
+        <div class="grid-2" id="testiGrid" style="max-width:900px;margin:0 auto"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+    <a href="courses.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+    <a href="player.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Learn</a>
+    <a href="results.html" class="bottom-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Results</a>
+    <a href="profile.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</a>
+  </nav>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('toppersGrid').innerHTML = EDUNOVA_DATA.toppers.map(t => `
+        <div class="result-card">
+          <span class="result-rank">${t.rank}</span>
+          <div class="result-avatar">${t.avatar}</div>
+          <h3 class="result-name">${t.name}</h3>
+          <p class="result-exam">${t.exam} · ${t.year}</p>
+          <div class="result-score">${t.score}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('testiGrid').innerHTML = EDUNOVA_DATA.testimonials.map(t => `
+        <div class="testimonial-card" style="flex:none;max-width:none">
+          <div class="testimonial-stars">${'★'.repeat(t.rating)}</div>
+          <p class="testimonial-text">"${t.text}"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">${t.avatar}</div>
+            <div class="testimonial-info"><h4>${t.name}</h4><p>${t.exam}</p></div>
+          </div>
+        </div>
+      `).join('');
+
+      App.initCounters();
+    });
+  </script>
+</body>
+</html>

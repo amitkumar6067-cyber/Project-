@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Profile — EDUNOVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body class="dashboard-page has-bottom-nav">
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="dashboard.html" class="logo"><div class="logo-mark">E</div> EDUNOVA</a>
+      <div class="nav-actions">
+        <button class="nav-theme-btn" id="themeToggle" aria-label="Toggle theme"></button>
+        <button class="nav-notif-btn" id="notifBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge" id="notifBadge">3</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-panel-header"><h3>Notifications</h3><button class="btn btn-ghost btn-sm" id="markAllRead">Mark all read</button></div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+
+  <main class="page-content">
+    <div class="container" style="padding-top:32px;padding-bottom:48px;max-width:600px">
+      <div class="profile-header-card">
+        <div class="profile-large-avatar">AM</div>
+        <h2>Aarav Mehta</h2>
+        <p>aarav.mehta@email.com</p>
+        <p style="font-size:0.875rem;margin-top:4px">Class 12 · Goal: JEE Advanced 2027</p>
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:16px">
+          <div style="text-align:center"><div style="font-weight:800;font-size:1.25rem">12</div><div style="font-size:0.75rem;color:var(--text-muted)">Day Streak</div></div>
+          <div style="text-align:center"><div style="font-weight:800;font-size:1.25rem">3</div><div style="font-size:0.75rem;color:var(--text-muted)">Certificates</div></div>
+          <div style="text-align:center"><div style="font-weight:800;font-size:1.25rem">87%</div><div style="font-size:0.75rem;color:var(--text-muted)">Quiz Avg</div></div>
+        </div>
+      </div>
+
+      <h3 style="margin-bottom:12px;font-size:1rem">Achievements</h3>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:32px" id="achievementsGrid"></div>
+
+      <h3 style="margin-bottom:12px;font-size:1rem">Certificates</h3>
+      <div style="display:grid;gap:12px;margin-bottom:32px" id="certsGrid"></div>
+
+      <div class="profile-menu-list">
+        <a href="dashboard.html">📊 My Courses</a>
+        <a href="resources.html">📚 Saved Resources</a>
+        <a href="#notifications" onclick="App.toggleNotifPanel()">🔔 Notifications</a>
+        <a href="#settings">⚙️ Settings</a>
+        <button data-action="logout" style="color:var(--error)">🚪 Logout</button>
+      </div>
+
+      <div id="settings" style="margin-top:32px">
+        <h3 style="margin-bottom:16px;font-size:1rem">Settings</h3>
+        <div class="card" style="padding:20px">
+          <div class="form-group">
+            <label class="form-label">Theme</label>
+            <button class="btn btn-secondary btn-sm" id="themeToggle2" onclick="App.toggleTheme()">Toggle Light / Dark</button>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Notifications</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem">
+              <input type="checkbox" checked> Class reminders
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;margin-top:8px">
+              <input type="checkbox" checked> Assignment deadlines
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+    <a href="courses.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+    <a href="player.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Learn</a>
+    <a href="results.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Results</a>
+    <a href="profile.html" class="bottom-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</a>
+  </nav>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/lottie.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!App.state.isLoggedIn) App.login();
+
+      document.getElementById('achievementsGrid').innerHTML = EDUNOVA_DATA.achievements.map(a => `
+        <div class="badge-card ${a.unlocked ? '' : 'locked'}">
+          <div class="badge-icon">${a.icon}</div>
+          <h4 style="font-size:0.8125rem">${a.title}</h4>
+          ${a.unlocked ? `<p style="font-size:0.6875rem;color:var(--text-muted)">${a.date}</p>` : '<p style="font-size:0.6875rem;color:var(--text-muted)">Locked</p>'}
+        </div>
+      `).join('');
+
+      document.getElementById('certsGrid').innerHTML = EDUNOVA_DATA.certificates.map(c => `
+        <div class="certificate-card">
+          <div class="certificate-preview">
+            <div style="font-size:1.5rem;margin-bottom:8px">🎓</div>
+            <h3>${c.course}</h3>
+            <p>${c.date} · Score: ${c.score}</p>
+          </div>
+          <div class="certificate-body" style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:0.75rem;color:var(--text-muted)">${c.id}</span>
+            <button class="btn btn-secondary btn-sm" onclick="App.toast('Certificate download started (Demo)','success')">Download</button>
+          </div>
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+</html>
