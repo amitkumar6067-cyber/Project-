@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="hi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+  <meta name="description" content="Professional QR Code Generator — URL, Wi-Fi, WhatsApp, vCard, Email, Phone, SMS + Logo, Gradient, History" />
+  <title>QR Magic Pro — Professional QR Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root, [data-theme="dark"] {
+      --bg: #0b0f19; --bg-elevated: #121826; --card: rgba(18, 24, 38, 0.92);
+      --border: rgba(255,255,255,0.09); --border-hover: rgba(255,255,255,0.16);
+      --text: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b;
+      --primary: #8b5cf6; --primary-soft: rgba(139,92,246,0.15); --secondary: #ec4899;
+      --success: #34d399; --danger: #f87171; --input-bg: #0b0f19;
+      --preview-bg: rgba(0,0,0,0.2); --qr-frame-bg: #ffffff;
+      --shadow: 0 25px 50px -12px rgba(0,0,0,0.55);
+      --mesh1: rgba(139,92,246,0.28); --mesh2: rgba(236,72,153,0.18); --mesh3: rgba(34,211,238,0.1);
+    }
+    [data-theme="light"] {
+      --bg: #f8fafc; --bg-elevated: #ffffff; --card: rgba(255,255,255,0.95);
+      --border: rgba(15,23,42,0.1); --border-hover: rgba(15,23,42,0.18);
+      --text: #0f172a; --text-secondary: #475569; --text-muted: #94a3b8;
+      --primary: #7c3aed; --primary-soft: rgba(124,58,237,0.1);
+      --input-bg: #f1f5f9; --preview-bg: #f1f5f9; --qr-frame-bg: #ffffff;
+      --shadow: 0 20px 40px -12px rgba(15,23,42,0.12);
+      --mesh1: rgba(139,92,246,0.12); --mesh2: rgba(236,72,153,0.08); --mesh3: rgba(34,211,238,0.06);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Inter, system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .bg-mesh { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 80% 50% at 15% -15%, var(--mesh1), transparent 50%), radial-gradient(ellipse 55% 40% at 95% 5%, var(--mesh2), transparent 50%), radial-gradient(ellipse 45% 45% at 55% 105%, var(--mesh3), transparent 50%); }
+    .container { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 20px 16px 48px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #8b5cf6, #ec4899); display: grid; place-items: center; color: #fff; font-size: 18px; box-shadow: 0 6px 18px rgba(139,92,246,0.4); }
+    .brand h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(90deg, #a78bfa, #f9a8d4, #67e8f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .brand span { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 500; margin-top: -2px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--text-secondary); cursor: pointer; display: grid; place-items: center; font-size: 16px; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+    .icon-btn:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+    .type-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; padding: 6px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow-x: auto; }
+    .type-tab { padding: 8px 14px; border-radius: 10px; border: none; background: transparent; color: var(--text-secondary); font-family: inherit; font-size: 0.82rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.15s, color 0.15s; display: flex; align-items: center; gap: 6px; }
+    .type-tab:hover { background: var(--primary-soft); color: var(--text); }
+    .type-tab.active { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; box-shadow: 0 4px 14px rgba(139,92,246,0.35); }
+    .main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+    @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; box-shadow: var(--shadow); }
+    .card-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 0.78rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
+    .field .hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+    input[type="text"], input[type="url"], input[type="email"], input[type="tel"], input[type="password"], textarea, select {
+      width: 100%; padding: 10px 12px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 0.9rem; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139,92,246,0.25); }
+    textarea { min-height: 72px; resize: vertical; }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 500px) { .row-2 { grid-template-columns: 1fr; } }
+    .color-field { display: flex; align-items: center; gap: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 5px 10px 5px 5px; }
+    .color-field input[type="color"] { width: 30px; height: 30px; border: none; background: transparent; cursor: pointer; padding: 0; }
+    .color-field input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-field input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(128,128,128,0.3); border-radius: 6px; }
+    .color-field span { font-size: 0.8rem; color: var(--text-secondary); }
+    .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .preset { width: 26px; height: 26px; border-radius: 7px; border: 2px solid transparent; cursor: pointer; padding: 0; transition: transform 0.12s, border-color 0.12s; }
+    .preset:hover { transform: scale(1.1); }
+    .preset.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--primary); }
+    .upload-zone { position: relative; border: 1.5px dashed var(--border-hover); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: rgba(0,0,0,0.08); }
+    [data-theme="light"] .upload-zone { background: rgba(0,0,0,0.03); }
+    .upload-zone:hover, .upload-zone.drag { border-color: var(--primary); background: var(--primary-soft); }
+    .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-zone p { font-size: 0.8rem; color: var(--text-muted); }
+    .upload-zone small { font-size: 0.7rem; color: var(--text-muted); }
+    .logo-row { display: none; align-items: center; gap: 12px; margin-top: 10px; }
+    .logo-row.show { display: flex; }
+    .logo-row img { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border); background: #fff; }
+    .range-row { display: flex; align-items: center; gap: 10px; }
+    input[type="range"] { flex: 1; -webkit-appearance: none; height: 5px; background: var(--input-bg); border-radius: 3px; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+    .range-val { font-size: 0.78rem; color: var(--text-secondary); min-width: 38px; text-align: right; }
+    .check-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+    .check-row input { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; }
+    .check-row label { font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; margin: 0; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 11px 16px; border: none; border-radius: 10px; font-family: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: transform 0.1s, box-shadow 0.15s, opacity 0.15s, background 0.15s; user-select: none; }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+    .btn-primary { flex: 1; min-width: 120px; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; box-shadow: 0 5px 18px rgba(139,92,246,0.35); }
+    .btn-primary:hover:not(:disabled) { box-shadow: 0 7px 24px rgba(139,92,246,0.5); }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); border-color: var(--primary); }
+    .btn-sm { padding: 7px 12px; font-size: 0.8rem; }
+    .btn-danger { color: var(--danger); border-color: rgba(248,113,113,0.3); }
+    .btn-danger:hover:not(:disabled) { background: rgba(248,113,113,0.1); }
+    .preview-card { position: sticky; top: 16px; }
+    .qr-frame { background: var(--qr-frame-bg); border-radius: 14px; padding: 16px; min-height: 240px; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .qr-frame.empty::after { content: "QR preview"; color: #94a3b8; font-size: 0.9rem; position: absolute; }
+    #qrcode { line-height: 0; display: flex; justify-content: center; }
+    #qrcode canvas, #qrcode img { display: block; max-width: 100%; border-radius: 4px; }
+    .preview-meta { text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; min-height: 1.2em; }
+    .export-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; justify-content: center; }
+    .loading-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; border-radius: 14px; z-index: 2; }
+    .loading-overlay.show { display: flex; }
+    .spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .history-section { margin-top: 24px; }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .history-header h2 { font-size: 1rem; font-weight: 600; }
+    .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .history-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; position: relative; }
+    .history-item:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .history-item .thumb { width: 100%; aspect-ratio: 1; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; }
+    .history-item .thumb img { max-width: 100%; max-height: 100%; }
+    .history-item .name { font-size: 0.8rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-item .meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    .history-item .actions { display: flex; gap: 4px; margin-top: 8px; opacity: 0; transition: opacity 0.15s; }
+    .history-item:hover .actions { opacity: 1; }
+    @media (max-width: 600px) { .history-item .actions { opacity: 1; } }
+    .empty-history { text-align: center; padding: 32px 16px; color: var(--text-muted); border: 1px dashed var(--border); border-radius: 12px; }
+    .templates-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .tpl-btn { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-secondary); font-size: 0.78rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .tpl-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+    .onboard { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.65); display: none; align-items: center; justify-content: center; padding: 20px; }
+    .onboard.show { display: flex; }
+    .onboard-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 20px; padding: 32px; max-width: 420px; width: 100%; text-align: center; box-shadow: var(--shadow); }
+    .onboard-card h2 { font-size: 1.4rem; margin-bottom: 8px; }
+    .onboard-card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px; }
+    .onboard-steps { text-align: left; margin-bottom: 24px; }
+    .onboard-steps li { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 8px; padding-left: 4px; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 900; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; padding: 16px; }
+    .modal-backdrop.show { display: flex; }
+    .modal { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; box-shadow: var(--shadow); }
+    .modal h3 { font-size: 1.1rem; margin-bottom: 12px; }
+    .modal .btn-row { margin-top: 20px; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; padding: 11px 22px; border-radius: 999px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 10px 28px rgba(0,0,0,0.35); opacity: 0; transition: transform 0.3s, opacity 0.3s; z-index: 1100; pointer-events: none; white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .type-panel { display: none; }
+    .type-panel.active { display: block; }
+    .kbd { display: inline-block; padding: 2px 6px; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border); font-size: 0.7rem; font-family: monospace; color: var(--text-muted); }
+    footer { text-align: center; margin-top: 36px; font-size: 0.78rem; color: var(--text-muted); }
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    button:focus:not(:focus-visible) { outline: none; }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">⬡</div>
+        <div><h1>QR Magic Pro</h1><span>Professional QR Generator</span></div>
+      </div>
+      <div class="top-actions">
+        <button type="button" class="icon-btn" id="themeBtn" title="Toggle theme (T)" aria-label="Toggle theme">🌓</button>
+        <button type="button" class="icon-btn" id="helpBtn" title="Help (?)" aria-label="Help">❓</button>
+      </div>
+    </div>
+    <div class="type-tabs" role="tablist" aria-label="QR type">
+      <button type="button" class="type-tab active" data-type="url" role="tab" aria-selected="true">🔗 URL</button>
+      <button type="button" class="type-tab" data-type="text" role="tab">📝 Text</button>
+      <button type="button" class="type-tab" data-type="wifi" role="tab">📶 Wi-Fi</button>
+      <button type="button" class="type-tab" data-type="whatsapp" role="tab">💬 WhatsApp</button>
+      <button type="button" class="type-tab" data-type="email" role="tab">✉️ Email</button>
+      <button type="button" class="type-tab" data-type="phone" role="tab">📞 Phone</button>
+      <button type="button" class="type-tab" data-type="vcard" role="tab">👤 vCard</button>
+      <button type="button" class="type-tab" data-type="sms" role="tab">💬 SMS</button>
+    </div>
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-title">⚡ Content</div>
+        <div class="type-panel active" data-panel="url"><div class="field"><label for="urlInput">Website URL</label><input type="url" id="urlInput" placeholder="https://example.com" autocomplete="url" /></div></div>
+        <div class="type-panel" data-panel="text"><div class="field"><label for="textInput">Any text</label><textarea id="textInput" placeholder="Type anything..."></textarea></div></div>
+        <div class="type-panel" data-panel="wifi">
+          <div class="field"><label for="wifiSsid">Network name (SSID)</label><input type="text" id="wifiSsid" placeholder="MyWiFi" /></div>
+          <div class="field"><label for="wifiPass">Password</label><input type="text" id="wifiPass" placeholder="password" /></div>
+          <div class="row-2">
+            <div class="field"><label for="wifiEnc">Encryption</label><select id="wifiEnc"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">None</option></select></div>
+            <div class="field" style="display:flex;align-items:flex-end;"><div class="check-row" style="margin-bottom:10px;"><input type="checkbox" id="wifiHidden" /><label for="wifiHidden">Hidden network</label></div></div>
+          </div>
+        </div>
+        <div class="type-panel" data-panel="whatsapp">
+          <div class="field"><label for="waPhone">Phone (with country code)</label><input type="tel" id="waPhone" placeholder="919876543210" /><p class="hint">Without + or spaces, e.g. 919876543210</p></div>
+          <div class="field"><label for="waMsg">Pre-filled message (optional)</label><textarea id="waMsg" placeholder="Hello!"></textarea></div>
+        </div>
+        <div class="type-panel" data-panel="email">
+          <div class="field"><label for="emailTo">To email</label><input type="email" id="emailTo" placeholder="hello@example.com" /></div>
+          <div class="field"><label for="emailSub">Subject</label><input type="text" id="emailSub" placeholder="Subject" /></div>
+          <div class="field"><label for="emailBody">Body</label><textarea id="emailBody" placeholder="Message..."></textarea></div>
+        </div>
+        <div class="type-panel" data-panel="phone"><div class="field"><label for="phoneNum">Phone number</label><input type="tel" id="phoneNum" placeholder="+91 98765 43210" /></div></div>
+        <div class="type-panel" data-panel="vcard">
+          <div class="row-2"><div class="field"><label for="vcFirst">First name</label><input type="text" id="vcFirst" placeholder="Rahul" /></div><div class="field"><label for="vcLast">Last name</label><input type="text" id="vcLast" placeholder="Sharma" /></div></div>
+          <div class="field"><label for="vcOrg">Organization</label><input type="text" id="vcOrg" placeholder="Company Pvt Ltd" /></div>
+          <div class="field"><label for="vcTitle">Job title</label><input type="text" id="vcTitle" placeholder="Founder" /></div>
+          <div class="row-2"><div class="field"><label for="vcPhone">Phone</label><input type="tel" id="vcPhone" placeholder="+91..." /></div><div class="field"><label for="vcEmail">Email</label><input type="email" id="vcEmail" placeholder="you@company.com" /></div></div>
+          <div class="field"><label for="vcUrl">Website</label><input type="url" id="vcUrl" placeholder="https://..." /></div>
+        </div>
+        <div class="type-panel" data-panel="sms">
+          <div class="field"><label for="smsPhone">Phone number</label><input type="tel" id="smsPhone" placeholder="+91 98765 43210" /></div>
+          <div class="field"><label for="smsBody">Message</label><textarea id="smsBody" placeholder="Your message..."></textarea></div>
+        </div>
+        <div class="card-title" style="margin-top:20px;">🎨 Style</div>
+        <div class="templates-row" id="templates">
+          <button type="button" class="tpl-btn" data-tpl="classic">Classic</button>
+          <button type="button" class="tpl-btn" data-tpl="brand">Brand Purple</button>
+          <button type="button" class="tpl-btn" data-tpl="ocean">Ocean</button>
+          <button type="button" class="tpl-btn" data-tpl="sunset">Sunset</button>
+          <button type="button" class="tpl-btn" data-tpl="dark">Dark Mode</button>
+          <button type="button" class="tpl-btn" data-tpl="mint">Mint</button>
+        </div>
+        <div class="field">
+          <label>Colors</label>
+          <div class="row-2">
+            <div class="color-field"><input type="color" id="fgColor" value="#1e1b4b" /><span>Foreground</span></div>
+            <div class="color-field"><input type="color" id="bgColor" value="#ffffff" /><span>Background</span></div>
+          </div>
+          <div class="check-row" style="margin-top:8px;"><input type="checkbox" id="useGradient" /><label for="useGradient">Gradient foreground</label></div>
+          <div class="row-2" id="gradRow" style="display:none; margin-top:8px;">
+            <div class="color-field"><input type="color" id="gradColor1" value="#8b5cf6" /><span>From</span></div>
+            <div class="color-field"><input type="color" id="gradColor2" value="#ec4899" /><span>To</span></div>
+          </div>
+          <div class="presets" id="presets">
+            <button type="button" class="preset active" data-fg="#1e1b4b" data-bg="#ffffff" style="background:linear-gradient(135deg,#1e1b4b 50%,#fff 50%)" title="Classic"></button>
+            <button type="button" class="preset" data-fg="#000000" data-bg="#ffffff" style="background:linear-gradient(135deg,#000 50%,#fff 50%)" title="Black"></button>
+            <button type="button" class="preset" data-fg="#7c3aed" data-bg="#f5f3ff" style="background:linear-gradient(135deg,#7c3aed 50%,#f5f3ff 50%)" title="Purple"></button>
+            <button type="button" class="preset" data-fg="#0f766e" data-bg="#ccfbf1" style="background:linear-gradient(135deg,#0f766e 50%,#ccfbf1 50%)" title="Teal"></button>
+            <button type="button" class="preset" data-fg="#be185d" data-bg="#fce7f3" style="background:linear-gradient(135deg,#be185d 50%,#fce7f3 50%)" title="Pink"></button>
+            <button type="button" class="preset" data-fg="#1e3a8a" data-bg="#dbeafe" style="background:linear-gradient(135deg,#1e3a8a 50%,#dbeafe 50%)" title="Blue"></button>
+            <button type="button" class="preset" data-fg="#ffffff" data-bg="#0f172a" style="background:linear-gradient(135deg,#fff 50%,#0f172a 50%)" title="Dark"></button>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field"><label for="size">Size</label><select id="size"><option value="200">200 px</option><option value="256" selected>256 px</option><option value="300">300 px</option><option value="400">400 px</option><option value="512">512 px</option><option value="1024">1024 px (HD)</option></select></div>
+          <div class="field"><label for="level">Error correction</label><select id="level"><option value="L">L — Low (~7%)</option><option value="M" selected>M — Medium (~15%)</option><option value="Q">Q — Quartile (~25%)</option><option value="H">H — High (~30%)</option></select></div>
+        </div>
+        <div class="field"><label for="margin">Margin (quiet zone)</label><div class="range-row"><input type="range" id="margin" min="0" max="6" value="2" /><span class="range-val" id="marginVal">2</span></div></div>
+        <div class="field">
+          <label>Logo (optional)</label>
+          <div class="upload-zone" id="dropZone"><input type="file" id="logoInput" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" /><p>🖼️ Drag & drop or click</p><small>PNG, JPG, WebP, SVG</small></div>
+          <div class="logo-row" id="logoRow"><img id="logoImg" alt="Logo preview" /><div style="flex:1;"><button type="button" class="btn btn-ghost btn-sm" id="removeLogo">Remove</button><div class="field" style="margin:8px 0 0;"><label for="logoSize" style="font-size:0.72rem;">Logo size</label><div class="range-row"><input type="range" id="logoSize" min="10" max="28" value="18" /><span class="range-val" id="logoSizeVal">18%</span></div></div></div></div>
+        </div>
+        <div class="field"><label for="qrName">Name (for history)</label><input type="text" id="qrName" placeholder="My QR Code" /></div>
+        <div class="check-row"><input type="checkbox" id="autoGenerate" checked /><label for="autoGenerate">Live preview</label></div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="generateBtn">⚡ Generate QR</button>
+          <button type="button" class="btn btn-ghost" id="clearBtn">Clear</button>
+          <button type="button" class="btn btn-ghost" id="saveBtn">💾 Save</button>
+        </div>
+      </div>
+      <div class="card preview-card">
+        <div class="card-title">📱 Preview</div>
+        <div class="qr-frame empty" id="qrFrame"><div id="qrcode"></div><div class="loading-overlay" id="loading"><div class="spinner"></div></div></div>
+        <p class="preview-meta" id="metaText"></p>
+        <div class="export-row" id="exportRow" style="display:none;">
+          <button type="button" class="btn btn-primary btn-sm" id="dlPng">⬇️ PNG</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="dlJpg">JPG</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="dlSvg">SVG</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="copyBtn">📋 Copy</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="shareBtn">🔗 Share</button>
+        </div>
+      </div>
+    </div>
+    <div class="history-section">
+      <div class="history-header"><h2>📚 Recent & Saved</h2><div style="display:flex;gap:8px;"><button type="button" class="btn btn-ghost btn-sm" id="clearHistoryBtn">Clear all</button></div></div>
+      <div class="history-grid" id="historyGrid"><div class="empty-history" id="emptyHistory">No saved QR codes yet. Generate and click <strong>Save</strong>.</div></div>
+    </div>
+    <footer><p>100% private · All data stays in your browser · <span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> generate · <span class="kbd">T</span> theme</p></footer>
+  </div>
+  <div class="onboard" id="onboard" role="dialog" aria-labelledby="onboardTitle">
+    <div class="onboard-card">
+      <div style="font-size:40px;margin-bottom:12px;">✨</div>
+      <h2 id="onboardTitle">Welcome to QR Magic Pro</h2>
+      <p>Create professional QR codes for links, Wi-Fi, WhatsApp, contacts & more.</p>
+      <ol class="onboard-steps"><li>Choose a <strong>QR type</strong> from the tabs</li><li>Fill details & customize colors / logo</li><li>Download PNG, JPG or SVG — or save to history</li></ol>
+      <button type="button" class="btn btn-primary" id="onboardClose" style="width:100%;">Get started</button>
+    </div>
+  </div>
+  <div class="modal-backdrop" id="renameModal"><div class="modal"><h3>Rename QR</h3><div class="field"><label for="renameInput">Name</label><input type="text" id="renameInput" /></div><div class="btn-row"><button type="button" class="btn btn-primary" id="renameConfirm">Save</button><button type="button" class="btn btn-ghost" id="renameCancel">Cancel</button></div></div></div>
+  <div class="modal-backdrop" id="helpModal"><div class="modal"><h3>Keyboard shortcuts</h3><p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.8;margin-bottom:16px;"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> — Generate<br /><span class="kbd">T</span> — Toggle theme<br /><span class="kbd">?</span> — This help<br /><span class="kbd">Esc</span> — Close modals</p><p style="font-size:0.82rem;color:var(--text-muted);">Tip: Use High (H) error correction when adding a logo so the QR still scans reliably.</p><div class="btn-row"><button type="button" class="btn btn-primary" id="helpClose">Got it</button></div></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+
+(function () {
+  'use strict';
+  var currentType = 'url';
+  var logoDataUrl = null;
+  var currentCanvas = null;
+  var currentPayload = '';
+  var historyItems = [];
+  var renameId = null;
+  var debounceTimer = null;
+  var STORAGE_KEY = 'qrmagic_history_v2';
+  var THEME_KEY = 'qrmagic_theme';
+  var ONBOARD_KEY = 'qrmagic_onboarded';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var contentFields = {
+    url: $('urlInput'), text: $('textInput'),
+    wifiSsid: $('wifiSsid'), wifiPass: $('wifiPass'), wifiEnc: $('wifiEnc'), wifiHidden: $('wifiHidden'),
+    waPhone: $('waPhone'), waMsg: $('waMsg'),
+    emailTo: $('emailTo'), emailSub: $('emailSub'), emailBody: $('emailBody'),
+    phoneNum: $('phoneNum'),
+    vcFirst: $('vcFirst'), vcLast: $('vcLast'), vcOrg: $('vcOrg'), vcTitle: $('vcTitle'),
+    vcPhone: $('vcPhone'), vcEmail: $('vcEmail'), vcUrl: $('vcUrl'),
+    smsPhone: $('smsPhone'), smsBody: $('smsBody')
+  };
+
+  function toast(msg) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 2600);
+  }
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+  }
+  function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+    toast(cur === 'dark' ? 'Light mode' : 'Dark mode');
+  }
+  (function initTheme() {
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (saved) applyTheme(saved);
+    else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) applyTheme('light');
+  })();
+  $('themeBtn').addEventListener('click', toggleTheme);
+
+  try { if (!localStorage.getItem(ONBOARD_KEY)) $('onboard').classList.add('show'); } catch (e) {}
+  $('onboardClose').addEventListener('click', function () {
+    $('onboard').classList.remove('show');
+    try { localStorage.setItem(ONBOARD_KEY, '1'); } catch (e) {}
+  });
+
+  document.querySelectorAll('.type-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.type-tab').forEach(function (t) {
+        t.classList.remove('active'); t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
+      currentType = tab.getAttribute('data-type');
+      document.querySelectorAll('.type-panel').forEach(function (p) {
+        p.classList.toggle('active', p.getAttribute('data-panel') === currentType);
+      });
+      maybeAuto();
+    });
+  });
+
+  function buildPayload() {
+    switch (currentType) {
+      case 'url': {
+        var u = contentFields.url.value.trim();
+        if (!u) return '';
+        if (!/^https?:\/\//i.test(u) && u.indexOf('.') !== -1) u = 'https://' + u;
+        return u;
+      }
+      case 'text': return contentFields.text.value.trim();
+      case 'wifi': {
+        var ssid = contentFields.wifiSsid.value.trim();
+        if (!ssid) return '';
+        var pass = contentFields.wifiPass.value;
+        var enc = contentFields.wifiEnc.value;
+        var hidden = contentFields.wifiHidden.checked ? 'H:true;' : '';
+        return 'WIFI:T:' + enc + ';S:' + escapeWifi(ssid) + ';P:' + escapeWifi(pass) + ';' + hidden + ';';
+      }
+      case 'whatsapp': {
+        var ph = contentFields.waPhone.value.replace(/\D/g, '');
+        if (!ph) return '';
+        var msg = contentFields.waMsg.value.trim();
+        var link = 'https://wa.me/' + ph;
+        if (msg) link += '?text=' + encodeURIComponent(msg);
+        return link;
+      }
+      case 'email': {
+        var to = contentFields.emailTo.value.trim();
+        if (!to) return '';
+        var sub = contentFields.emailSub.value.trim();
+        var body = contentFields.emailBody.value.trim();
+        var mailto = 'mailto:' + to;
+        var params = [];
+        if (sub) params.push('subject=' + encodeURIComponent(sub));
+        if (body) params.push('body=' + encodeURIComponent(body));
+        if (params.length) mailto += '?' + params.join('&');
+        return mailto;
+      }
+      case 'phone': {
+        var n = contentFields.phoneNum.value.trim();
+        return n ? 'tel:' + n.replace(/\s/g, '') : '';
+      }
+      case 'vcard': {
+        var fn = contentFields.vcFirst.value.trim();
+        var ln = contentFields.vcLast.value.trim();
+        if (!fn && !ln) return '';
+        var lines = ['BEGIN:VCARD', 'VERSION:3.0'];
+        lines.push('N:' + ln + ';' + fn + ';;;');
+        lines.push('FN:' + (fn + ' ' + ln).trim());
+        if (contentFields.vcOrg.value.trim()) lines.push('ORG:' + contentFields.vcOrg.value.trim());
+        if (contentFields.vcTitle.value.trim()) lines.push('TITLE:' + contentFields.vcTitle.value.trim());
+        if (contentFields.vcPhone.value.trim()) lines.push('TEL;TYPE=CELL:' + contentFields.vcPhone.value.trim());
+        if (contentFields.vcEmail.value.trim()) lines.push('EMAIL:' + contentFields.vcEmail.value.trim());
+        if (contentFields.vcUrl.value.trim()) lines.push('URL:' + contentFields.vcUrl.value.trim());
+        lines.push('END:VCARD');
+        return lines.join('\n');
+      }
+      case 'sms': {
+        var sp = contentFields.smsPhone.value.trim().replace(/\s/g, '');
+        if (!sp) return '';
+        var sb = contentFields.smsBody.value.trim();
+        var s = 'sms:' + sp;
+        if (sb) s += '?body=' + encodeURIComponent(sb);
+        return s;
+      }
+      default: return '';
+    }
+  }
+  function escapeWifi(s) { return String(s).replace(/([\\;,:"])/g, '\\$1'); }
+  function defaultName() {
+    var names = { url: 'Website QR', text: 'Text QR', wifi: 'Wi-Fi QR', whatsapp: 'WhatsApp QR', email: 'Email QR', phone: 'Phone QR', vcard: 'Contact QR', sms: 'SMS QR' };
+    var custom = $('qrName').value.trim();
+    return custom || (names[currentType] || 'QR Code') + ' ' + new Date().toLocaleDateString();
+  }
+
+  $('margin').addEventListener('input', function () { $('marginVal').textContent = this.value; maybeAuto(); });
+  $('logoSize').addEventListener('input', function () { $('logoSizeVal').textContent = this.value + '%'; if (logoDataUrl) maybeAuto(); });
+  $('useGradient').addEventListener('change', function () { $('gradRow').style.display = this.checked ? 'grid' : 'none'; maybeAuto(); });
+  $('gradColor1').addEventListener('input', maybeAuto);
+  $('gradColor2').addEventListener('input', maybeAuto);
+  $('fgColor').addEventListener('input', function () { document.querySelectorAll('.preset').forEach(function (p) { p.classList.remove('active'); }); maybeAuto(); });
+  $('bgColor').addEventListener('input', function () { document.querySelectorAll('.preset').forEach(function (p) { p.classList.remove('active'); }); maybeAuto(); });
+  $('size').addEventListener('change', maybeAuto);
+  $('level').addEventListener('change', maybeAuto);
+
+  $('presets').addEventListener('click', function (e) {
+    var btn = e.target.closest('.preset');
+    if (!btn) return;
+    document.querySelectorAll('.preset').forEach(function (p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    $('fgColor').value = btn.getAttribute('data-fg');
+    $('bgColor').value = btn.getAttribute('data-bg');
+    $('useGradient').checked = false;
+    $('gradRow').style.display = 'none';
+    maybeAuto();
+  });
+
+  var TPL = {
+    classic: { fg: '#1e1b4b', bg: '#ffffff', grad: false },
+    brand: { fg: '#7c3aed', bg: '#f5f3ff', grad: true, g1: '#8b5cf6', g2: '#ec4899' },
+    ocean: { fg: '#0e7490', bg: '#ecfeff', grad: true, g1: '#06b6d4', g2: '#3b82f6' },
+    sunset: { fg: '#c2410c', bg: '#fff7ed', grad: true, g1: '#f97316', g2: '#ec4899' },
+    dark: { fg: '#ffffff', bg: '#0f172a', grad: false },
+    mint: { fg: '#047857', bg: '#ecfdf5', grad: true, g1: '#10b981', g2: '#14b8a6' }
+  };
+  $('templates').addEventListener('click', function (e) {
+    var btn = e.target.closest('.tpl-btn');
+    if (!btn) return;
+    var t = TPL[btn.getAttribute('data-tpl')];
+    if (!t) return;
+    $('fgColor').value = t.fg; $('bgColor').value = t.bg;
+    $('useGradient').checked = !!t.grad;
+    $('gradRow').style.display = t.grad ? 'grid' : 'none';
+    if (t.g1) $('gradColor1').value = t.g1;
+    if (t.g2) $('gradColor2').value = t.g2;
+    document.querySelectorAll('.preset').forEach(function (p) { p.classList.remove('active'); });
+    maybeAuto(); toast('Template applied');
+  });
+
+  function loadLogo(file) {
+    if (!file || !file.type || file.type.indexOf('image/') !== 0) { toast('Please choose an image file'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast('Image must be under 5MB'); return; }
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      logoDataUrl = ev.target.result;
+      $('logoImg').src = logoDataUrl;
+      $('logoRow').classList.add('show');
+      if ($('level').value === 'L' || $('level').value === 'M') $('level').value = 'H';
+      maybeAuto(); toast('Logo loaded');
+    };
+    reader.onerror = function () { toast('Failed to load image'); };
+    reader.readAsDataURL(file);
+  }
+  $('logoInput').addEventListener('change', function (e) { if (e.target.files && e.target.files[0]) loadLogo(e.target.files[0]); });
+  $('removeLogo').addEventListener('click', function () {
+    logoDataUrl = null; $('logoInput').value = ''; $('logoRow').classList.remove('show'); maybeAuto(); toast('Logo removed');
+  });
+  var dropZone = $('dropZone');
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    dropZone.addEventListener(ev, function (e) { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    dropZone.addEventListener(ev, function (e) { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('drag'); });
+  });
+  dropZone.addEventListener('drop', function (e) { var f = e.dataTransfer.files[0]; if (f) loadLogo(f); });
+
+  Object.keys(contentFields).forEach(function (k) {
+    var el = contentFields[k]; if (!el) return;
+    el.addEventListener('input', maybeAuto); el.addEventListener('change', maybeAuto);
+  });
+  function maybeAuto() { if ($('autoGenerate').checked && buildPayload()) scheduleGenerate(); }
+  function scheduleGenerate() { clearTimeout(debounceTimer); debounceTimer = setTimeout(generateQR, 320); }
+
+  function setLoading(on) { $('loading').classList.toggle('show', on); }
+
+  function generateQR() {
+    var payload = buildPayload();
+    if (!payload) { toast('Fill in the required fields'); return; }
+    if (typeof QRCode === 'undefined') { toast('QR library not loaded — check internet'); return; }
+    currentPayload = payload;
+    setLoading(true);
+    $('qrcode').innerHTML = '';
+    currentCanvas = null;
+    $('qrFrame').classList.remove('empty');
+    $('exportRow').style.display = 'none';
+    $('metaText').textContent = '';
+    var size = parseInt($('size').value, 10) || 256;
+    var marginExtra = parseInt($('margin').value, 10) || 2;
+    var levelMap = { L: QRCode.CorrectLevel.L, M: QRCode.CorrectLevel.M, Q: QRCode.CorrectLevel.Q, H: QRCode.CorrectLevel.H };
+    var fg = $('fgColor').value, bg = $('bgColor').value;
+    var holder = document.createElement('div');
+    holder.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;';
+    document.body.appendChild(holder);
+    try {
+      new QRCode(holder, { text: payload, width: size, height: size, colorDark: fg, colorLight: bg, correctLevel: levelMap[$('level').value] || QRCode.CorrectLevel.M });
+    } catch (err) {
+      if (holder.parentNode) document.body.removeChild(holder);
+      setLoading(false); toast('Could not generate QR'); $('qrFrame').classList.add('empty'); return;
+    }
+    var tries = 0;
+    var poll = setInterval(function () {
+      tries++;
+      var canvas = holder.querySelector('canvas');
+      var img = holder.querySelector('img');
+      if (canvas || img || tries >= 30) {
+        clearInterval(poll);
+        function cleanup() { if (holder.parentNode) document.body.removeChild(holder); setLoading(false); }
+        if (canvas) {
+          postProcess(canvas, size, marginExtra, bg).then(function (c) { finish(c); cleanup(); }).catch(function () { finish(canvas); cleanup(); });
+        } else if (img) {
+          var c = document.createElement('canvas'); c.width = size; c.height = size;
+          var ctx = c.getContext('2d');
+          var image = new Image();
+          image.onload = function () {
+            ctx.fillStyle = bg; ctx.fillRect(0, 0, size, size); ctx.drawImage(image, 0, 0, size, size);
+            postProcess(c, size, marginExtra, bg).then(function (out) { finish(out); cleanup(); }).catch(function () { finish(c); cleanup(); });
+          };
+          image.onerror = function () {
+            $('qrcode').appendChild(img.cloneNode(true)); $('exportRow').style.display = 'flex';
+            $('metaText').textContent = size + ' × ' + size; cleanup(); toast('QR ready');
+          };
+          image.src = img.src;
+        } else {
+          cleanup(); $('qrFrame').classList.add('empty'); toast('Generation failed — refresh page');
+        }
+      }
+    }, 20);
+  }
+
+  function postProcess(src, baseSize, marginModules, bg) {
+    return new Promise(function (resolve) {
+      var pad = Math.max(0, (marginModules - 2) * Math.floor(baseSize / 28));
+      var outW = baseSize + pad * 2, outH = baseSize + pad * 2;
+      var out = document.createElement('canvas'); out.width = outW; out.height = outH;
+      var ctx = out.getContext('2d');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, outW, outH);
+      ctx.drawImage(src, pad, pad, baseSize, baseSize);
+      if ($('useGradient').checked) applyGradientOverlay(ctx, out, pad, baseSize);
+      if (!logoDataUrl) { resolve(out); return; }
+      var logo = new Image();
+      logo.onload = function () {
+        var pct = (parseInt($('logoSize').value, 10) || 18) / 100;
+        var logoSize = Math.floor(baseSize * pct);
+        var x = pad + (baseSize - logoSize) / 2, y = pad + (baseSize - logoSize) / 2;
+        var padding = Math.max(4, Math.floor(logoSize * 0.1)), r = 6;
+        var px = x - padding, py = y - padding, pw = logoSize + padding * 2, ph = logoSize + padding * 2;
+        ctx.fillStyle = bg;
+        ctx.beginPath(); ctx.moveTo(px + r, py);
+        ctx.arcTo(px + pw, py, px + pw, py + ph, r); ctx.arcTo(px + pw, py + ph, px, py + ph, r);
+        ctx.arcTo(px, py + ph, px, py, r); ctx.arcTo(px, py, px + pw, py, r); ctx.closePath(); ctx.fill();
+        ctx.drawImage(logo, x, y, logoSize, logoSize);
+        resolve(out);
+      };
+      logo.onerror = function () { resolve(out); };
+      logo.src = logoDataUrl;
+    });
+  }
+
+  function applyGradientOverlay(ctx, canvas, pad, baseSize) {
+    try {
+      var imgData = ctx.getImageData(pad, pad, baseSize, baseSize);
+      var data = imgData.data;
+      var g1 = hexToRgb($('gradColor1').value), g2 = hexToRgb($('gradColor2').value), bg = hexToRgb($('bgColor').value);
+      for (var i = 0; i < data.length; i += 4) {
+        var dr = Math.abs(data[i] - bg.r), dg = Math.abs(data[i + 1] - bg.g), db = Math.abs(data[i + 2] - bg.b);
+        if (dr + dg + db > 80) {
+          var px = (i / 4) % baseSize, t = px / baseSize;
+          data[i] = Math.round(g1.r + (g2.r - g1.r) * t);
+          data[i + 1] = Math.round(g1.g + (g2.g - g1.g) * t);
+          data[i + 2] = Math.round(g1.b + (g2.b - g1.b) * t);
+        }
+      }
+      ctx.putImageData(imgData, pad, pad);
+    } catch (e) {}
+  }
+  function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    return { r: parseInt(hex.substring(0, 2), 16), g: parseInt(hex.substring(2, 4), 16), b: parseInt(hex.substring(4, 6), 16) };
+  }
+
+  function finish(canvas) {
+    currentCanvas = canvas;
+    $('qrcode').innerHTML = '';
+    var display = document.createElement('canvas');
+    display.width = canvas.width; display.height = canvas.height;
+    display.getContext('2d').drawImage(canvas, 0, 0);
+    if (display.width > 320) {
+      var scale = 320 / display.width;
+      display.style.width = '320px';
+      display.style.height = Math.round(display.height * scale) + 'px';
+    }
+    $('qrcode').appendChild(display);
+    currentCanvas = canvas;
+    $('exportRow').style.display = 'flex';
+    $('metaText').textContent = canvas.width + ' × ' + canvas.height + ' px · ' + currentType.toUpperCase() + ' · ' + $('level').value;
+    toast('QR ready 🎉');
+  }
+
+  $('generateBtn').addEventListener('click', generateQR);
+  $('clearBtn').addEventListener('click', function () {
+    Object.keys(contentFields).forEach(function (k) {
+      var el = contentFields[k]; if (!el) return;
+      if (el.type === 'checkbox') el.checked = false; else el.value = '';
+    });
+    $('qrName').value = ''; logoDataUrl = null; $('logoInput').value = ''; $('logoRow').classList.remove('show');
+    $('qrcode').innerHTML = ''; $('qrFrame').classList.add('empty'); $('exportRow').style.display = 'none';
+    $('metaText').textContent = ''; currentCanvas = null; currentPayload = ''; toast('Cleared');
+  });
+
+  function downloadCanvas(format) {
+    if (!currentCanvas) { toast('Generate QR first'); return; }
+    var name = (defaultName().replace(/[^\w\-]+/g, '_') || 'qr') + '-' + Date.now();
+    if (format === 'svg') { downloadSVG(name); return; }
+    var mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
+    var ext = format === 'jpg' ? 'jpg' : 'png';
+    try {
+      var link = document.createElement('a');
+      link.download = name + '.' + ext;
+      if (format === 'jpg') {
+        var c = document.createElement('canvas'); c.width = currentCanvas.width; c.height = currentCanvas.height;
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = $('bgColor').value || '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(currentCanvas, 0, 0);
+        link.href = c.toDataURL(mime, 0.92);
+      } else {
+        link.href = currentCanvas.toDataURL(mime);
+      }
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      toast(ext.toUpperCase() + ' downloaded');
+    } catch (e) { toast('Download failed'); }
+  }
+  function downloadSVG(name) {
+    var dataUrl = currentCanvas.toDataURL('image/png');
+    var w = currentCanvas.width, h = currentCanvas.height;
+    var svg = '<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">\n<image width="' + w + '" height="' + h + '" xlink:href="' + dataUrl + '"/>\n</svg>';
+    var blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a'); link.download = name + '.svg'; link.href = url;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+    toast('SVG downloaded');
+  }
+  $('dlPng').addEventListener('click', function () { downloadCanvas('png'); });
+  $('dlJpg').addEventListener('click', function () { downloadCanvas('jpg'); });
+  $('dlSvg').addEventListener('click', function () { downloadCanvas('svg'); });
+  $('copyBtn').addEventListener('click', function () {
+    if (!currentCanvas) { toast('Generate QR first'); return; }
+    if (navigator.clipboard && window.ClipboardItem) {
+      currentCanvas.toBlob(function (blob) {
+        if (!blob) { toast('Copy failed'); return; }
+        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+          .then(function () { toast('Copied to clipboard'); })
+          .catch(function () { toast('Copy not supported — use download'); });
+      }, 'image/png');
+    } else toast('Copy not supported — use download');
+  });
+  $('shareBtn').addEventListener('click', async function () {
+    if (!currentCanvas) { toast('Generate QR first'); return; }
+    try {
+      if (navigator.share && navigator.canShare) {
+        var blob = await new Promise(function (res) { currentCanvas.toBlob(res, 'image/png'); });
+        var file = new File([blob], 'qr.png', { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: defaultName(), text: currentPayload });
+          toast('Shared'); return;
+        }
+      }
+      if (navigator.clipboard) { await navigator.clipboard.writeText(currentPayload); toast('Payload copied (share not available)'); }
+      else toast('Share not available');
+    } catch (e) { if (e.name !== 'AbortError') toast('Share cancelled or failed'); }
+  });
+
+  function loadHistory() {
+    try { var raw = localStorage.getItem(STORAGE_KEY); historyItems = raw ? JSON.parse(raw) : []; } catch (e) { historyItems = []; }
+    renderHistory();
+  }
+  function saveHistory() {
+    try {
+      if (historyItems.length > 40) historyItems = historyItems.slice(0, 40);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(historyItems));
+    } catch (e) { toast('Storage full — clear some history'); }
+  }
+  function renderHistory() {
+    var grid = $('historyGrid');
+    if (!historyItems.length) {
+      grid.innerHTML = '<div class="empty-history">No saved QR codes yet. Generate and click <strong>Save</strong>.</div>';
+      return;
+    }
+    grid.innerHTML = historyItems.map(function (item) {
+      return '<div class="history-item" data-id="' + item.id + '" title="Click to load">' +
+        '<div class="thumb"><img src="' + item.thumb + '" alt="" /></div>' +
+        '<div class="name">' + escapeHtml(item.name) + '</div>' +
+        '<div class="meta">' + item.type.toUpperCase() + ' · ' + formatDate(item.ts) + '</div>' +
+        '<div class="actions">' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="load">Load</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="dup">Copy</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="rename">✎</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm btn-danger" data-act="del">✕</button>' +
+        '</div></div>';
+    }).join('');
+  }
+  function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function formatDate(ts) { try { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (e) { return ''; } }
+
+  $('saveBtn').addEventListener('click', function () {
+    if (!currentCanvas || !currentPayload) { toast('Generate a QR first'); return; }
+    var thumbC = document.createElement('canvas');
+    var tw = 120;
+    thumbC.width = tw; thumbC.height = Math.round(currentCanvas.height * (tw / currentCanvas.width));
+    thumbC.getContext('2d').drawImage(currentCanvas, 0, 0, thumbC.width, thumbC.height);
+    var item = {
+      id: 'qr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      name: defaultName(), type: currentType, payload: currentPayload,
+      thumb: thumbC.toDataURL('image/png'),
+      fg: $('fgColor').value, bg: $('bgColor').value, size: parseInt($('size').value, 10),
+      level: $('level').value, margin: parseInt($('margin').value, 10),
+      useGradient: $('useGradient').checked, g1: $('gradColor1').value, g2: $('gradColor2').value,
+      logo: logoDataUrl, logoSize: parseInt($('logoSize').value, 10), ts: Date.now()
+    };
+    historyItems.unshift(item); saveHistory(); renderHistory(); toast('Saved to history');
+  });
+
+  $('historyGrid').addEventListener('click', function (e) {
+    var itemEl = e.target.closest('.history-item');
+    if (!itemEl) return;
+    var id = itemEl.getAttribute('data-id');
+    var item = historyItems.find(function (h) { return h.id === id; });
+    if (!item) return;
+    var act = e.target.getAttribute('data-act');
+    if (act === 'del') {
+      historyItems = historyItems.filter(function (h) { return h.id !== id; });
+      saveHistory(); renderHistory(); toast('Deleted'); return;
+    }
+    if (act === 'rename') {
+      renameId = id; $('renameInput').value = item.name;
+      $('renameModal').classList.add('show'); $('renameInput').focus(); return;
+    }
+    if (act === 'dup') {
+      var copy = JSON.parse(JSON.stringify(item));
+      copy.id = 'qr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      copy.name = item.name + ' (copy)'; copy.ts = Date.now();
+      historyItems.unshift(copy); saveHistory(); renderHistory(); toast('Duplicated'); return;
+    }
+    loadItem(item);
+  });
+
+  function loadItem(item) {
+    var tab = document.querySelector('.type-tab[data-type="' + item.type + '"]');
+    if (tab) tab.click();
+    $('fgColor').value = item.fg || '#1e1b4b'; $('bgColor').value = item.bg || '#ffffff';
+    $('size').value = String(item.size || 256); $('level').value = item.level || 'M';
+    $('margin').value = item.margin != null ? item.margin : 2; $('marginVal').textContent = $('margin').value;
+    $('useGradient').checked = !!item.useGradient; $('gradRow').style.display = item.useGradient ? 'grid' : 'none';
+    if (item.g1) $('gradColor1').value = item.g1; if (item.g2) $('gradColor2').value = item.g2;
+    $('qrName').value = item.name || '';
+    if (item.logo) {
+      logoDataUrl = item.logo; $('logoImg').src = item.logo; $('logoRow').classList.add('show');
+      if (item.logoSize) { $('logoSize').value = item.logoSize; $('logoSizeVal').textContent = item.logoSize + '%'; }
+    } else { logoDataUrl = null; $('logoRow').classList.remove('show'); }
+    restoreContentFromPayload(item);
+    setTimeout(generateQR, 50);
+    toast('Loaded: ' + item.name);
+  }
+
+  function restoreContentFromPayload(item) {
+    var p = item.payload || '';
+    try {
+      switch (item.type) {
+        case 'url': contentFields.url.value = p; break;
+        case 'text': contentFields.text.value = p; break;
+        case 'whatsapp':
+          var m = p.match(/wa\.me\/(\d+)/); if (m) contentFields.waPhone.value = m[1];
+          var tm = p.match(/text=([^&]+)/); if (tm) contentFields.waMsg.value = decodeURIComponent(tm[1]);
+          break;
+        case 'email':
+          var em = p.replace(/^mailto:/, '').split('?');
+          contentFields.emailTo.value = em[0] || '';
+          if (em[1]) { var params = new URLSearchParams(em[1]); contentFields.emailSub.value = params.get('subject') || ''; contentFields.emailBody.value = params.get('body') || ''; }
+          break;
+        case 'phone': contentFields.phoneNum.value = p.replace(/^tel:/, ''); break;
+        case 'sms':
+          var sm = p.replace(/^sms:/, '').split('?');
+          contentFields.smsPhone.value = sm[0] || '';
+          if (sm[1]) { var sp = new URLSearchParams(sm[1]); contentFields.smsBody.value = sp.get('body') || ''; }
+          break;
+        case 'wifi':
+          var ss = p.match(/S:([^;]*)/); var pw = p.match(/P:([^;]*)/); var te = p.match(/T:([^;]*)/);
+          if (ss) contentFields.wifiSsid.value = ss[1].replace(/\\(.)/g, '$1');
+          if (pw) contentFields.wifiPass.value = pw[1].replace(/\\(.)/g, '$1');
+          if (te) contentFields.wifiEnc.value = te[1];
+          contentFields.wifiHidden.checked = /H:true/.test(p);
+          break;
+        case 'vcard':
+          var fn = p.match(/FN:([^\n\r]+)/);
+          if (fn) { var parts = fn[1].trim().split(' '); contentFields.vcFirst.value = parts[0] || ''; contentFields.vcLast.value = parts.slice(1).join(' ') || ''; }
+          break;
+      }
+    } catch (e) {}
+  }
+
+  $('renameConfirm').addEventListener('click', function () {
+    var name = $('renameInput').value.trim();
+    if (!name || !renameId) return;
+    var item = historyItems.find(function (h) { return h.id === renameId; });
+    if (item) { item.name = name; saveHistory(); renderHistory(); toast('Renamed'); }
+    $('renameModal').classList.remove('show'); renameId = null;
+  });
+  $('renameCancel').addEventListener('click', function () { $('renameModal').classList.remove('show'); renameId = null; });
+  $('clearHistoryBtn').addEventListener('click', function () {
+    if (!historyItems.length) return;
+    if (!confirm('Delete all saved QR codes?')) return;
+    historyItems = []; saveHistory(); renderHistory(); toast('History cleared');
+  });
+  $('helpBtn').addEventListener('click', function () { $('helpModal').classList.add('show'); });
+  $('helpClose').addEventListener('click', function () { $('helpModal').classList.remove('show'); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      $('renameModal').classList.remove('show'); $('helpModal').classList.remove('show'); $('onboard').classList.remove('show');
+    }
+    if (e.key === '?' && !e.target.matches('input, textarea, select')) { e.preventDefault(); $('helpModal').classList.add('show'); }
+    if ((e.key === 't' || e.key === 'T') && !e.target.matches('input, textarea, select')) { e.preventDefault(); toggleTheme(); }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); generateQR(); }
+  });
+
+  loadHistory();
+  contentFields.url.focus();
+})();
+
+</script>
+</body>
+</html>
